@@ -1,0 +1,33 @@
+{
+  "name": "@datalackey/form-fill-bookmarklet",
+  "version": "0.0.1",
+  "description": "Bookmarklet utility that scans HTML forms and auto-fills them from a JSON template. Designed for non-technical users submitting to web-based event calendar forms.",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --minify --format=iife --outfile=dist/bookmarklet.js && node scripts/wrap-bookmarklet.js",
+    "build:dev": "esbuild src/index.ts --bundle --format=iife --outfile=dist/bookmarklet.dev.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src tests",
+    "format": "prettier --write src tests"
+  },
+  "devDependencies": {
+    "@datalackey/typescript-build-config": "^0.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.60.1",
+    "@typescript-eslint/parser": "^8.60.1",
+    "@vitest/coverage-v8": "^2.0.0",
+    "esbuild": "^0.21.0",
+    "jsdom": "^24.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:datalackey/form-fill-bookmarklet.git"
+  }
+}
