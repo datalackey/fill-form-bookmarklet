@@ -1,0 +1,10 @@
+.idea/
+
+**/node_modules/
+**/dist/
+*.tsbuildinfo 
+
+coverage/
+.nx/
+.env
+
