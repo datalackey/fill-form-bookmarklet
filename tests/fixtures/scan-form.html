@@ -1,0 +1,137 @@
+<!--
+  Mirror of the <form> served by test-server/server.js, used for hermetic jsdom
+  unit tests of dom.ts. Keep in sync with the test server (or, better, refactor
+  the server to read this file as its single source of truth — see dom.test.ts).
+-->
+<form method="POST" action="/submit">
+    <!-- GROUP 1: Pattern 2 — field wrapped inside <label> -->
+    <fieldset>
+        <legend>Group 1</legend>
+        <label
+            >Text
+            <span class="attr-note">name="g1_text"</span>
+            <input type="text" name="g1_text" value="hello" />
+        </label>
+        <label
+            >Email
+            <span class="attr-note">name="g1_email"</span>
+            <input type="email" name="g1_email" />
+        </label>
+        <label
+            >Checkbox
+            <span class="attr-note">name="g1_checkbox"</span>
+            <input type="checkbox" name="g1_checkbox" value="on" />
+        </label>
+        <label
+            >Select
+            <span class="attr-note">name="g1_select"</span>
+            <select name="g1_select">
+                <option value="">-- choose --</option>
+                <option value="alpha" selected>Alpha</option>
+                <option value="beta">Beta</option>
+            </select>
+        </label>
+    </fieldset>
+
+    <!-- GROUP 2: Pattern 1 — <label for="id"> -->
+    <fieldset>
+        <legend>Group 2</legend>
+        <label for="g2_text_id"
+            >Text
+            <span class="pattern-note">label for="g2_text_id"</span>
+        </label>
+        <input type="text" name="g2_text" id="g2_text_id" />
+        <label for="g2_email_id">Email</label>
+        <input type="email" name="g2_email" id="g2_email_id" />
+    </fieldset>
+
+    <!-- GROUP 3: Pattern 3 — preceding sibling <label> (CalendarWiz style) -->
+    <fieldset>
+        <legend>Group 3</legend>
+        <div class="control-group">
+            <label class="control-label">Full Name</label>
+            <input type="text" name="g3_fullname" />
+            <span class="pattern-note">preceding sibling label</span>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Email Address</label>
+            <input type="email" name="g3_email" />
+        </div>
+    </fieldset>
+
+    <!-- GROUP 4: Radio button group (shared name) -->
+    <fieldset>
+        <legend>Group 4</legend>
+        <p>Event visibility</p>
+        <label><input type="radio" name="g4_visibility" value="public" /> Public</label>
+        <label><input type="radio" name="g4_visibility" value="private" /> Private</label>
+        <label><input type="radio" name="g4_visibility" value="members" /> Members only</label>
+    </fieldset>
+
+    <!-- GROUP 5: Hidden fields — must be discovered but never overwritten -->
+    <fieldset>
+        <legend>Group 5</legend>
+        <input type="hidden" name="g5_calendar_id" value="97241" />
+        <input type="hidden" name="g5_actiontype" value="suggest" />
+        <input type="hidden" name="g5_savesubmit" value="true" />
+    </fieldset>
+
+    <!-- GROUP 6: Date/time cluster — Pattern 3b, grouped under one label -->
+    <fieldset>
+        <legend>Group 6</legend>
+        <div class="control-group">
+            <label class="control-label">Start Date</label>
+            <div class="field-row">
+                <select name="g6_startmonth">
+                    <option value="5">May</option>
+                    <option value="6" selected>June</option>
+                    <option value="7">July</option>
+                </select>
+                <select name="g6_startday">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                </select>
+                <select name="g6_startyear">
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Start Time</label>
+            <div class="field-row">
+                <select name="g6_starthour">
+                    <option value="6">6</option>
+                    <option value="7" selected>7</option>
+                </select>
+                <select name="g6_startmin">
+                    <option value="00" selected>00</option>
+                    <option value="15">15</option>
+                </select>
+                <select name="g6_startampm">
+                    <option value="am">AM</option>
+                    <option value="pm" selected>PM</option>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- GROUP 7: All four attributes present (name wins for POST) -->
+    <fieldset>
+        <legend>Group 7</legend>
+        <label
+            >Text
+            <span class="attr-note">name + id + aria-label + placeholder</span>
+            <input
+                type="text"
+                name="g7_name_text"
+                id="g7_id_text"
+                aria-label="g7_aria_text"
+                placeholder="g7_placeholder_text"
+            />
+        </label>
+    </fieldset>
+
+    <button type="submit">Submit — echo all fields</button>
+</form>

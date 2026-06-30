@@ -1,0 +1,37 @@
+{
+    "name": "form-fill-bookmarklet",
+    "sourceRoot": "src",
+    "projectType": "application",
+    "targets": {
+        "build": {
+            "command": "esbuild src/app/index.ts --bundle --minify --format=iife --outfile=dist/bookmarklet.js && node scripts/wrap-bookmarklet.js",
+            "outputs": ["{projectRoot}/dist"]
+        },
+        "build-dev": {
+            "command": "esbuild src/app/index.ts --bundle --format=iife --outfile=dist/bookmarklet.dev.js",
+            "outputs": ["{projectRoot}/dist"]
+        },
+        "test": {
+            "command": "vitest run",
+            "dependsOn": ["build"]
+        },
+        "lint": {
+            "command": "eslint src tests"
+        },
+        "update-format": {
+            "command": "prettier --write src tests"
+        },
+        "check-format": {
+            "command": "prettier --check src tests"
+        },
+        "update-docs": {
+            "command": "autogen-markdown-doc update README.md"
+        },
+        "check-docs": {
+            "command": "autogen-markdown-doc check README.md"
+        },
+        "ci": {
+            "dependsOn": ["build", "test", "lint", "check-format", "check-docs"]
+        }
+    }
+}
