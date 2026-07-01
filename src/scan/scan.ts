@@ -1,6 +1,6 @@
-import { discoverFields } from "../dom/dom.js";
-import { serializeTemplate } from "../clipboard/clipboard.js";
-import { FormField, ScanViewModel, Template } from "../types/types.js";
+import { discoverFields } from "../core/dom.js";
+import { serializeTemplate } from "../core/clipboard.js";
+import { FormField, ScanViewModel, Template } from "../core/types.js";
 
 /** Build a flat name -> value template from discovered fields. */
 export function buildTemplate(fields: FormField[]): Template {

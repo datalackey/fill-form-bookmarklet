@@ -134,25 +134,41 @@ Not yet implemented.
 
 ## Module structure
 
+Code is grouped into four component folders: a shared `core` layer that both
+phases sit on, one folder per phase (`scan`, `fill`), and an `app` shell.
+Each folder carries a `_COMPONENT_INFO.md` used by the UML docs generator.
+
 ```
 src/
-  index.ts       # thin orchestration only, no logic
-  types.ts       # shared interfaces, no deps
-  detect.ts      # isReactForm(), isInsideIframe() — pure booleans
-  dom.ts         # discoverFields(), detectLabel(), detectGroups()
-  clipboard.ts   # readClipboard(), parseTemplate()
-  scan.ts        # buildTemplate(), buildScanViewModel()
-  fill.ts        # matchFields(), fillField()
-  overlay.ts     # showOverlay(), closeOverlay(), renderScanView(), renderFillView()
+  core/
+    types.ts       # shared interfaces, no deps
+    dom.ts         # discoverFields(), detectLabel(), detectGroups()
+    clipboard.ts   # readClipboard(), parseTemplate(), serializeTemplate()
+    _COMPONENT_INFO.md
+  scan/
+    scan.ts        # buildTemplate(), buildScanViewModel()  — discovery phase
+    _COMPONENT_INFO.md
+  fill/
+    fill.ts        # matchFields(), fillField(), runFill()  — fill phase
+    _COMPONENT_INFO.md
+  app/
+    index.ts       # thin orchestration entry (esbuild entry point)
+    overlay.ts     # showOverlay(), closeOverlay(), renderScanView(), renderFillView()
+    detect.ts      # isReactForm(), isInsideIframe() — pure booleans
+    _COMPONENT_INFO.md
 tests/
-  detect.test.ts  # exists, 4 tests, all passing
-  dom.test.ts     # not yet written
-  clipboard.test.ts # not yet written
-  scan.test.ts    # not yet written
-  fill.test.ts    # not yet written
+  detect.test.ts        # 4 tests, all passing (imports src/app/detect.ts)
+  dom.test.ts           # 17 tests (16 + 1 todo), jsdom vs fixtures/scan-form.html
+  fixtures/scan-form.html  # mirror of the test-server form for hermetic tests
+  clipboard.test.ts     # not yet written
+  scan.test.ts          # not yet written
+  fill.test.ts          # not yet written
 scripts/
   wrap-bookmarklet.js  # prepends javascript: and encodeURIComponent, writes dist/bookmarklet.txt
 ```
+
+Dependency direction (also rendered in README.md via the UML docs generator):
+`app → scan, fill, core`; `scan → core`; `fill → core`. `core` depends on nothing.
 
 ---
 
@@ -161,50 +177,67 @@ scripts/
 ### Done
 - Project scaffolding: package.json, tsconfig.json, vitest.config.ts,
   eslint.config.js, prettier.config.js, .gitignore
-- `src/types.ts` — all interfaces defined
-- `src/detect.ts` — isReactForm() implemented
-- `src/index.ts` — hello world IIFE calling isReactForm()
-- `tests/detect.test.ts` — 4 passing tests
+- `src/core/types.ts` — all interfaces defined (incl. ScanViewModel)
+- `src/app/detect.ts` — isReactForm() and isInsideIframe() implemented
+- `src/core/dom.ts` — discoverFields(), detectLabel() (4 patterns), detectGroups()
+  ported from the spike
+- `src/core/clipboard.ts` — readClipboard(), parseTemplate(), serializeTemplate()
+- `src/scan/scan.ts` — buildTemplate(), buildScanViewModel()
+- `src/fill/fill.ts` — matchFields(), fillField(), runFill()
+- `src/app/overlay.ts` — overlay render/inject (basic; manual-tested only)
+- `src/app/index.ts` — orchestration entry: React/iframe guards, clipboard-based
+  mode auto-detect (Fill vs Scan)
+- `tests/detect.test.ts` (4) and `tests/dom.test.ts` (16 + 1 todo) passing
 - `scripts/wrap-bookmarklet.js` — bookmarklet wrapper script
-- Spike: field discovery, all three label patterns, group detection
+- NX migration complete — see below
+- Documentation generation via build-tools plugins (autogen-markdown-doc): README
+  TOC, component UML, and NX build-graph auto-generated and drift-checked in CI
+- Spike: field discovery, all four label patterns, group detection
   validated against local test server (see spike notes below)
 
-### Not yet started
-- `src/dom.ts`
-- `src/clipboard.ts`
-- `src/scan.ts`
-- `src/fill.ts`
-- `src/overlay.ts`
-- NX migration (see below)
-- Documentation generation via build-tools plugins
+### Not yet started / known gaps
+- `overlay.ts` is a basic implementation — the full scan table / fill-and-submit
+  UI is not finished, and it is manual-test only
+- Radio group labels (spike carry-forward): each radio reports its own option
+  text instead of the shared group label — locked as `it.todo` in dom.test.ts
+- `clipboard.test.ts`, `scan.test.ts`, `fill.test.ts` not yet written
+- Server-integration and browser-E2E test tiers not yet added (test-server form
+  is currently mirrored, not shared, by tests/fixtures/scan-form.html)
 
 ---
 
-## NX migration — planned, not yet done
+## NX migration — done
 
-The project currently uses plain `package.json` scripts. Plan is to
-migrate to NX for consistency with the `build-tools` monorepo conventions.
+Single-project NX setup (matching `build-tools` NX `22.5.4`). esbuild is invoked
+directly as a `command` target (not `@nx/esbuild`) — the bookmarklet bundle step
+is non-standard. Config lives in `nx.json` (targetDefaults + namedInputs) and
+`project.json`.
 
-**Before starting NX migration, read:**
-- `build-tools` root `package.json` for NX version and plugins in use
-- An existing `project.json` from a `build-tools` package for target conventions
-- `nx.json` from `build-tools` for global NX config
+Targets: `build`, `build-dev`, `test` (dependsOn build), `lint`, `update-format`,
+`check-format`, `update-docs`, `check-docs`, and `ci` (aggregates build, test,
+lint, check-format, check-docs).
 
-The `build-tools` monorepo uses NX 22.x. Match that version.
-Check whether `@nx/esbuild` is used or whether esbuild is invoked directly
-via a custom executor or `package.json` script — this project needs esbuild
-for the bookmarklet bundle step which is non-standard.
+**Naming gotcha:** NX reserves `format` / `format:check` / `format:write` as
+built-in commands, so the targets are named `update-format` / `check-format`
+(never `format`) — matching the `build-tools` workspace convention.
+
+`npm run <script>` entries delegate to NX (`build` → `nx build`, `format` →
+`nx update-format`, `docs` → `nx update-docs`, etc.). `npx nx ci` is the local
+gate equivalent to CI.
 
 ---
 
 ## Build
 
 ```bash
-npm run build       # esbuild bundle + wrap-bookmarklet.js → dist/bookmarklet.txt
-npm run build:dev   # unminified bundle for debugging
-npm test            # vitest run
-npm run lint        # eslint src tests
-npm run format      # prettier --write src tests
+npm run build       # nx build → esbuild bundle + wrap-bookmarklet.js → dist/bookmarklet.txt
+npm run build:dev   # nx build-dev → unminified bundle for debugging
+npm test            # nx test (builds first via dependsOn) → vitest run
+npm run lint        # nx lint → eslint src tests
+npm run format      # nx update-format → prettier --write src tests
+npm run docs        # nx update-docs → regenerate README auto-sections
+npm run docs:check  # nx check-docs → CI drift check
+npx nx ci           # full local gate: build + test + lint + check-format + check-docs
 ```
 
 ---

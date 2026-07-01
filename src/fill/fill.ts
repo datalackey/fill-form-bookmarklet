@@ -1,6 +1,6 @@
-import { discoverFields } from "../dom/dom.js";
-import { readClipboard, parseTemplate } from "../clipboard/clipboard.js";
-import { FormField, MatchResult, Template } from "../types/types.js";
+import { discoverFields } from "../core/dom.js";
+import { readClipboard, parseTemplate } from "../core/clipboard.js";
+import { FormField, MatchResult, Template } from "../core/types.js";
 
 /**
  * Three-way match between a template and the form on the page:

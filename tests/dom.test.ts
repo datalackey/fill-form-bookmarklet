@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { discoverFields, detectLabel } from "../src/dom/dom.js";
-import { FormField } from "../src/types/types.js";
+import { discoverFields, detectLabel } from "../src/core/dom.js";
+import { FormField } from "../src/core/types.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const formHtml = readFileSync(resolve(here, "fixtures/scan-form.html"), "utf-8");

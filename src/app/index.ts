@@ -1,7 +1,7 @@
-import { isReactForm, isInsideIframe } from "../detect/detect.js";
+import { isReactForm, isInsideIframe } from "./detect.js";
 import { buildScanViewModel } from "../scan/scan.js";
 import { runFill } from "../fill/fill.js";
-import { showOverlay, renderScanView, renderFillView } from "../overlay/overlay.js";
+import { showOverlay, renderScanView, renderFillView } from "./overlay.js";
 
 // Thin orchestration only. Mode is auto-detected from the clipboard: a valid
 // template ⇒ Fill, otherwise ⇒ Scan.

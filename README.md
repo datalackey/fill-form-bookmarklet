@@ -11,13 +11,9 @@
     - [Components](#components)
     - [Component Details](#component-details)
       - [app](#app)
-      - [clipboard](#clipboard)
-      - [detect](#detect)
-      - [dom](#dom)
+      - [core](#core)
       - [fill](#fill)
-      - [overlay](#overlay)
       - [scan](#scan)
-      - [types](#types)
   - [Build Pipeline](#build-pipeline)
   - [Build](#build)
   - [Project Status](#project-status)
@@ -46,9 +42,10 @@ phases describe the full human workflow.
 
 ### Phase 0 — Install the bookmarklet (one time)
 
-Build the bookmarklet (see [Build](#build)) and save its contents as the URL of
-a new browser bookmark, using whatever native "add bookmark" technique your
-browser supports. No installation, extension, or account is required.
+Go to the **[install page](https://datalackey.github.io/form-fill-bookmarklet/)**,
+copy the bookmarklet text, and save it as the URL of a new browser bookmark.
+Step-by-step instructions for Chrome, Firefox, and Safari are on that page.
+No installation, extension, or account is required.
 
 ### Phase 1 — Capture (Scan mode)
 
@@ -102,37 +99,18 @@ awareness but are **never** overwritten by the bookmarklet.
 flowchart TB
   subgraph app["app"]
   end
-  subgraph clipboard["clipboard"]
-  end
-  subgraph detect["detect"]
-  end
-  subgraph dom["dom"]
+  subgraph core["core"]
   end
   subgraph fill["fill"]
   end
-  subgraph overlay["overlay"]
-  end
   subgraph scan["scan"]
   end
-  subgraph types["types"]
-  end
 
-  app --> clipboard
-  app --> detect
-  app --> dom
+  app --> core
   app --> fill
-  app --> overlay
   app --> scan
-  app --> types
-  clipboard --> types
-  dom --> types
-  fill --> clipboard
-  fill --> dom
-  fill --> types
-  overlay --> types
-  scan --> clipboard
-  scan --> dom
-  scan --> types
+  fill --> core
+  scan --> core
 ```
 <!-- UML:components:END -->
 
@@ -141,14 +119,10 @@ flowchart TB
 <!-- UML:components-table:START -->
 | Component | Description |
 |-----------|-------------|
-| [app](#app) | Thin orchestration entry point |
-| [clipboard](#clipboard) | Clipboard transport for the JSON template: reads clipboard text, parses it into a flat name to value map, and serializes a template back to JSON for the user to save |
-| [detect](#detect) | Pure environment probes: isReactForm() guards against unsupported React forms; isInsideIframe() detects the cross-origin iframe case so the user can be told to open the form directly |
-| [dom](#dom) | Form-field discovery and four-pattern human-label detection (ported from the spike) |
+| [app](#app) | Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary |
+| [core](#core) | Shared foundation layer used by both phases: the TypeScript interfaces (FormField, Template, MatchResult, ScanViewModel), the DOM utility code (field discovery by name attribute, four-pattern label detection, and group clustering, ported from the spike), and the clipboard transport (read/parse/serialize the JSON template) |
 | [fill](#fill) | Fill-mode logic: three-way match between a template and the page form, single-field value application with input/change events, and the clipboard-driven fill entry point |
-| [overlay](#overlay) | In-page UI: renders the Scan table and Fill summary as HTML and injects/removes a fixed-position overlay |
 | [scan](#scan) | Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user |
-| [types](#types) | Shared TypeScript interfaces (FormField, LabelResult, Template, MatchResult, ScanViewModel) with no runtime code or dependencies |
 <!-- UML:components-table:END -->
 
 ### Component Details
@@ -160,43 +134,7 @@ classDiagram
   direction TB
 ```
 
-#### clipboard
-```mermaid
-classDiagram
-  direction TB
-```
-
-#### detect
-```mermaid
-classDiagram
-  direction TB
-```
-
-#### dom
-```mermaid
-classDiagram
-  direction TB
-```
-
-#### fill
-```mermaid
-classDiagram
-  direction TB
-```
-
-#### overlay
-```mermaid
-classDiagram
-  direction TB
-```
-
-#### scan
-```mermaid
-classDiagram
-  direction TB
-```
-
-#### types
+#### core
 ```mermaid
 classDiagram
   direction TB
@@ -229,6 +167,18 @@ classDiagram
     +template Template
     +templateText string
   }
+```
+
+#### fill
+```mermaid
+classDiagram
+  direction TB
+```
+
+#### scan
+```mermaid
+classDiagram
+  direction TB
 ```
 <!-- UML:component-details:END -->
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { isReactForm } from "../src/detect/detect.js";
+import { isReactForm } from "../src/app/detect.js";
 
 beforeEach(function () {
     document.body.innerHTML = "";
