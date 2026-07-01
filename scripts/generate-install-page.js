@@ -235,7 +235,7 @@ var html = `<!DOCTYPE html>
     </div>
 
     <footer>
-      <a href="https://github.com/datalackey/form-fill-bookmarklet">View source on GitHub</a>
+      <a href="https://github.com/datalackey/fill-form-bookmarklet">View source on GitHub</a>
     </footer>
   </div>
 

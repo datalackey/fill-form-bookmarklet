@@ -1,10 +1,10 @@
 <!-- TOC:START -->
 - [form-fill-bookmarklet](#form-fill-bookmarklet)
   - [How It Works](#how-it-works)
-    - [Phase 0 — Install the bookmarklet (one time)](#phase-0--install-the-bookmarklet-one-time)
-    - [Phase 1 — Capture (Scan mode)](#phase-1--capture-scan-mode)
-    - [Phase 2 — Edit offline (between submissions)](#phase-2--edit-offline-between-submissions)
-    - [Phase 3 — Refill & resubmit (Fill mode)](#phase-3--refill--resubmit-fill-mode)
+    - [Phase 0 — Install](#phase-0--install)
+    - [Phase 1 — Scan](#phase-1--scan)
+    - [Phase 2 — Edit](#phase-2--edit)
+    - [Phase 3 — Fill](#phase-3--fill)
   - [Tagged Content Format](#tagged-content-format)
   - [Architecture](#architecture)
     - [Component Diagram](#component-diagram)
@@ -21,7 +21,7 @@
 
 # form-fill-bookmarklet
 
-A zero-dependency browser bookmarklet that removes the per-event overhead of
+A zero-dependency browser bookmarklet that removes the repetitive overhead of
 submitting **recurring events** to web calendars that have **no native support
 for periodic recurrence** (e.g. CalendarWiz, and many WordPress/Drupal nonprofit
 calendar plugins).
@@ -40,48 +40,36 @@ The tool operates in distinct phases. The bookmarklet itself is a **single**
 bookmark with **two auto-detected modes** (Capture / Refill); the surrounding
 phases describe the full human workflow.
 
-### Phase 0 — Install the bookmarklet (one time)
+### Phase 0 — Install
 
-Go to the **[install page](https://datalackey.github.io/form-fill-bookmarklet/)**,
-copy the bookmarklet text, and save it as the URL of a new browser bookmark.
+Go to the **[install page](https://datalackey.github.io/fill-form-bookmarklet/)**,
+copy the bookmarklet text, and save it as a browser bookmark.
 Step-by-step instructions for Chrome, Firefox, and Safari are on that page.
-No installation, extension, or account is required.
+No installation, extension, or account required.
 
-### Phase 1 — Capture (Scan mode)
+### Phase 1 — Scan
 
-1. Navigate to the calendar's event-submission form.
-2. Fill the form out by hand, once, exactly as you want a typical event.
-3. Click the bookmarklet. With an empty or non-template clipboard, it runs in
-   **Scan mode** and:
-   - discovers every form field that has a `name` attribute (only `name` fields
-     are sent in the POST — see [CLAUDE.md](./CLAUDE.md) for why not `id`),
-   - detects each field's human-readable **label** (four patterns proven in the
-     [spike](./spike/README.md)),
-   - reads the **value you just entered** for each field,
-   - clusters grouped fields (e.g. the day/month/year of a date) under one label,
-   - displays a tidy two-column table: **field name → label → current value**,
-   - and renders a **tagged-content template** (a `name → value` map) below it.
-4. Click **Copy**, then paste the template into a plain text file and save it.
+1. Navigate to the form and fill it out by hand, exactly as you want a typical event.
+2. Click the bookmarklet. With an empty clipboard it runs in **Scan mode**:
+   - discovers every form field with a `name` attribute,
+   - detects each field's human-readable label,
+   - displays a field / label / value table and a JSON template below it.
+3. Click **Copy**, paste into a plain text file, and save it.
 
-### Phase 2 — Edit offline (between submissions)
+### Phase 2 — Edit
 
-For each new occurrence of the event, open your saved template and change **only
-the values that differ** — usually just the new event date and/or time. Every
-other field stays exactly as captured.
+Open your saved template and change only the values that differ — usually just
+the date. Everything else stays as captured.
 
-### Phase 3 — Refill & resubmit (Fill mode)
+### Phase 3 — Fill
 
-1. Copy the edited tagged content to your clipboard.
-2. Open the calendar's submission form and click the bookmarklet. Detecting
-   valid template content on the clipboard, it runs in **Fill mode** and:
-   - performs a three-way match between template keys and form fields
-     (✅ will fill · ⚠️ key with no field on page · ⚠️ field with no template value),
-   - fills each matched field and dispatches `input` + `change` events,
-   - and, on your confirmation, clicks the form's submit button. There is **no
-     auto-submit** — you always confirm first.
+1. Copy your edited template to the clipboard.
+2. Click the bookmarklet. It runs in **Fill mode**:
+   - matches template keys to form fields (✅ will fill · ⚠️ stale key · ⚠️ no template value),
+   - fills each matched field,
+   - shows a **Fill and Submit** button — no auto-submit, you always confirm.
 
-> Mode is chosen automatically from the clipboard: valid template ⇒ Fill,
-> otherwise ⇒ Scan. One bookmark, no toggling.
+> Mode is chosen from the clipboard automatically: valid template ⇒ Fill, otherwise ⇒ Scan.
 
 ## Tagged Content Format
 
@@ -225,8 +213,26 @@ npm run docs:check   # CI drift check (fails if docs are stale)
 
 ## Project Status
 
-Field discovery and all four label-detection patterns are proven against the
-local test server; see the [spike notes](./spike/README.md). Current source lives
-in `src/` (`detect.ts`, `index.ts`, `types.ts`); the remaining modules
-(`dom.ts`, `clipboard.ts`, `scan.ts`, `fill.ts`, `overlay.ts`) are specified in
-[CLAUDE.md](./CLAUDE.md) and not yet implemented.
+### Done
+
+All core modules are implemented and the bookmarklet builds and deploys:
+
+- `src/core/types.ts` — shared interfaces (`FormField`, `Template`, `MatchResult`, `ScanViewModel`)
+- `src/core/dom.ts` — `discoverFields()`, `detectLabel()` (four patterns), `detectGroups()`
+- `src/core/clipboard.ts` — `readClipboard()`, `parseTemplate()`, `serializeTemplate()`
+- `src/scan/scan.ts` — `buildTemplate()`, `buildScanViewModel()`
+- `src/fill/fill.ts` — `matchFields()`, `fillField()`, `runFill()`
+- `src/app/detect.ts` — `isReactForm()`, `isInsideIframe()`
+- `src/app/overlay.ts` — `showOverlay()`, `renderScanView()`, `renderFillView()` (basic; manual-tested only)
+- `src/app/index.ts` — orchestration entry point
+- `tests/detect.test.ts` (4 passing), `tests/dom.test.ts` (16 passing + 1 todo)
+- GitHub Actions CI/CD → deploys install page to GitHub Pages on every push to `main`
+
+All four label-detection patterns are proven against the local test server; see the [spike notes](./spike/README.md).
+
+### Known gaps
+
+- Overlay UI is basic — full scan table layout and fill-and-submit confirmation not yet polished
+- Radio group labels: each radio reports its own option text instead of the shared group label (spike carry-forward, locked as `it.todo` in `dom.test.ts`)
+- `clipboard.test.ts`, `scan.test.ts`, `fill.test.ts` not yet written
+- Checkbox and `<select>` filling not yet handled in `fillField()` (per CLAUDE.md)
