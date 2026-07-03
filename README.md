@@ -17,7 +17,6 @@
   - [Build Pipeline](#build-pipeline)
   - [Build](#build)
   - [Project Status](#project-status)
-    - [Done](#done)
     - [Known gaps](#known-gaps)
 <!-- TOC:END -->
 
@@ -126,7 +125,9 @@ flowchart TB
 | `isReactForm` | — | boolean | Returns true if any React signal is detected on the page: a [data-reactroot] |
 | `isInsideIframe` | — | boolean | Returns true when the bookmarklet is running inside an iframe by comparing |
 | `renderScanView` | model: ScanViewModel | string | Render the Scan-mode view: copy/cancel buttons, field table, JSON template block. |
-| `renderFillView` | result: MatchResult | string | Render the Fill-mode view: three-way match summary. |
+| `renderFillView` | vm: FillViewModel | string | Render the Fill-mode view: match table and action buttons. |
+| `showFillOverlay` | vm: FillViewModel<br>onFill: () => void | void | Render and inject the Fill overlay, then wire up Fill and Submit, Cancel, |
+| `showErrorOverlay` | message: string | void | Show an error overlay with a message and a Close button. |
 | `showOverlay` | html: string | void | Inject a fixed-position overlay containing the given HTML into the page. |
 | `closeOverlay` | — | void | Remove the bookmarklet overlay from the page if it is present. |
 | `showScanOverlay` | model: ScanViewModel | void | Render and inject the Scan overlay, then wire up Copy, Cancel, and Escape |
@@ -164,6 +165,11 @@ classDiagram
     +template Template
     +templateText string
   }
+  class FillViewModel {
+    <<interface>>
+    +result MatchResult
+    +template Template
+  }
 ```
 
 #### fill
@@ -171,7 +177,8 @@ classDiagram
 |----------|------------|---------|-------------|
 | `matchFields` | template: Template<br>fields: FormField[] | MatchResult | Three-way match between a template and the form on the page: |
 | `fillField` | field: FormField<br>value: string | void | Apply a single value to a field and fire the events frameworks listen for. |
-| `runFill` | — | Promise<MatchResult | null> | Fill-mode entry point. |
+| `runFill` | raw: string | FillViewModel | null | Fill-mode entry point. |
+| `applyFill` | vm: FillViewModel | void | Apply every matched field value from the template to the live DOM elements. |
 
 #### scan
 | Function | Parameters | Returns | Description |
@@ -196,6 +203,7 @@ graph TD
   ci
   lint
   test
+  test_e2e
   update_all_formatting
   update_code_formatting
   update_markdown_docs
@@ -206,6 +214,7 @@ graph TD
   ci --> lint
   ci --> test
   test --> build
+  test_e2e --> build_dev
   update_all_formatting --> update_code_formatting
   update_all_formatting --> update_markdown_docs
 ```
@@ -226,26 +235,7 @@ npm run docs:check   # CI drift check (fails if docs are stale)
 
 ## Project Status
 
-### Done
-
-All core modules are implemented and the bookmarklet builds and deploys:
-
-- `src/core/types.ts` — shared interfaces (`FormField`, `Template`, `MatchResult`, `ScanViewModel`)
-- `src/core/dom.ts` — `discoverFields()`, `detectLabel()` (four patterns), `detectGroups()`
-- `src/core/clipboard.ts` — `readClipboard()`, `parseTemplate()`, `serializeTemplate()`
-- `src/scan/scan.ts` — `buildTemplate()`, `buildScanViewModel()`
-- `src/fill/fill.ts` — `matchFields()`, `fillField()`, `runFill()`
-- `src/app/detect.ts` — `isReactForm()`, `isInsideIframe()`
-- `src/app/overlay.ts` — `showOverlay()`, `renderScanView()`, `renderFillView()` (basic; manual-tested only)
-- `src/app/index.ts` — orchestration entry point
-- `tests/detect.test.ts` (4 passing), `tests/dom.test.ts` (16 passing + 1 todo)
-- GitHub Actions CI/CD → deploys install page to GitHub Pages on every push to `main`
-
-All four label-detection patterns are proven against the local test server; see the [spike notes](./spike/README.md).
-
 ### Known gaps
 
-- Overlay UI is basic — full scan table layout and fill-and-submit confirmation not yet polished
 - Radio group labels: each radio reports its own option text instead of the shared group label (spike carry-forward, locked as `it.todo` in `dom.test.ts`)
-- `clipboard.test.ts`, `scan.test.ts`, `fill.test.ts` not yet written
-- Checkbox and `<select>` filling not yet handled in `fillField()` (per CLAUDE.md)
+- Checkbox and `<select>` filling not yet handled in `fillField()` 
