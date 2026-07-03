@@ -7,6 +7,9 @@ export default defineConfig({
         browserName: "chromium",
         headless: true,
         baseURL: "http://localhost:3456",
+        ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+            ? { launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } }
+            : {}),
     },
     webServer: {
         command: "node test-server/server.js",
