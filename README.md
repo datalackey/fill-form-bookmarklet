@@ -1,24 +1,25 @@
 <!-- TOC:START -->
-
 - [form-fill-bookmarklet](#form-fill-bookmarklet)
-    - [How It Works](#how-it-works)
-        - [Phase 0 — Install](#phase-0--install)
-        - [Phase 1 — Scan](#phase-1--scan)
-        - [Phase 2 — Edit](#phase-2--edit)
-        - [Phase 3 — Fill](#phase-3--fill)
-    - [Tagged Content Format](#tagged-content-format)
-    - [Architecture](#architecture)
-        - [Component Diagram](#component-diagram)
-        - [Components](#components)
-        - [Component Details](#component-details)
-            - [app](#app)
-            - [core](#core)
-            - [fill](#fill)
-            - [scan](#scan)
-    - [Build Pipeline](#build-pipeline)
-    - [Build](#build)
-    - [Project Status](#project-status)
-      <!-- TOC:END -->
+  - [How It Works](#how-it-works)
+    - [Phase 0 — Install](#phase-0--install)
+    - [Phase 1 — Scan](#phase-1--scan)
+    - [Phase 2 — Edit](#phase-2--edit)
+    - [Phase 3 — Fill](#phase-3--fill)
+  - [Tagged Content Format](#tagged-content-format)
+  - [Architecture](#architecture)
+    - [Component Diagram](#component-diagram)
+    - [Components](#components)
+    - [Component Details](#component-details)
+      - [app](#app)
+      - [core](#core)
+      - [fill](#fill)
+      - [scan](#scan)
+  - [Build Pipeline](#build-pipeline)
+  - [Build](#build)
+  - [Project Status](#project-status)
+    - [Done](#done)
+    - [Known gaps](#known-gaps)
+<!-- TOC:END -->
 
 # form-fill-bookmarklet
 
@@ -86,7 +87,6 @@ awareness but are **never** overwritten by the bookmarklet.
 ### Component Diagram
 
 <!-- UML:components:START -->
-
 ```mermaid
 flowchart TB
   subgraph app["app"]
@@ -104,35 +104,33 @@ flowchart TB
   fill --> core
   scan --> core
 ```
-
 <!-- UML:components:END -->
 
 ### Components
 
 <!-- UML:components-table:START -->
-
-| Component     | Description                                                                                                                                                                                                                                                                                                                         |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [app](#app)   | Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary                                                        |
+| Component | Description |
+|-----------|-------------|
+| [app](#app) | Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary |
 | [core](#core) | Shared foundation layer used by both phases: the TypeScript interfaces (FormField, Template, MatchResult, ScanViewModel), the DOM utility code (field discovery by name attribute, four-pattern label detection, and group clustering, ported from the spike), and the clipboard transport (read/parse/serialize the JSON template) |
-| [fill](#fill) | Fill-mode logic: three-way match between a template and the page form, single-field value application with input/change events, and the clipboard-driven fill entry point                                                                                                                                                           |
-| [scan](#scan) | Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user                                                                                                                                                                             |
-
+| [fill](#fill) | Fill-mode logic: three-way match between a template and the page form, single-field value application with input/change events, and the clipboard-driven fill entry point |
+| [scan](#scan) | Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user |
 <!-- UML:components-table:END -->
 
 ### Component Details
 
 <!-- UML:component-details:START -->
-
 #### app
-
-```mermaid
-classDiagram
-  direction TB
-```
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `isReactForm` | — | boolean | Returns true if any React signal is detected on the page: a [data-reactroot] |
+| `isInsideIframe` | — | boolean | Returns true when the bookmarklet is running inside an iframe by comparing |
+| `renderScanView` | model: ScanViewModel | string | Render the Scan-mode view: field/label/value table + copyable template. |
+| `renderFillView` | result: MatchResult | string | Render the Fill-mode view: three-way match summary. |
+| `showOverlay` | html: string | void | Inject a fixed-position overlay containing the given HTML into the page. |
+| `closeOverlay` | — | void | Remove the bookmarklet overlay from the page if it is present. |
 
 #### core
-
 ```mermaid
 classDiagram
   direction TB
@@ -168,19 +166,17 @@ classDiagram
 ```
 
 #### fill
-
-```mermaid
-classDiagram
-  direction TB
-```
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `matchFields` | template: Template<br>fields: FormField[] | MatchResult | Three-way match between a template and the form on the page: |
+| `fillField` | field: FormField<br>value: string | void | Apply a single value to a field and fire the events frameworks listen for. |
+| `runFill` | — | Promise<MatchResult | null> | Fill-mode entry point. |
 
 #### scan
-
-```mermaid
-classDiagram
-  direction TB
-```
-
+| Function | Parameters | Returns | Description |
+|----------|------------|---------|-------------|
+| `buildTemplate` | fields: FormField[] | Template | Build a flat name -> value template from discovered fields. |
+| `buildScanViewModel` | — | ScanViewModel | Produce the Scan-mode view model: the discovered fields (with current values |
 <!-- UML:component-details:END -->
 
 ## Build Pipeline
@@ -189,7 +185,6 @@ The diagram below is generated from the NX target definitions in
 [`project.json`](./project.json).
 
 <!-- NX_GRAPH:START -->
-
 ```mermaid
 graph TD
 
@@ -200,8 +195,9 @@ graph TD
   ci
   lint
   test
-  update_docs
-  update_format
+  update_all_formatting
+  update_code_formatting
+  update_markdown_docs
 
   ci --> build
   ci --> check_docs
@@ -209,8 +205,9 @@ graph TD
   ci --> lint
   ci --> test
   test --> build
+  update_all_formatting --> update_code_formatting
+  update_all_formatting --> update_markdown_docs
 ```
-
 <!-- NX_GRAPH:END -->
 
 ## Build

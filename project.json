@@ -18,17 +18,20 @@
         "lint": {
             "command": "eslint src tests"
         },
-        "update-format": {
+        "update-code-formatting": {
             "command": "prettier --write src tests"
         },
         "check-format": {
             "command": "prettier --check src tests"
         },
-        "update-docs": {
+        "update-markdown-docs": {
             "command": "autogen-markdown-doc update README.md"
         },
         "check-docs": {
             "command": "autogen-markdown-doc check README.md"
+        },
+        "update-all-formatting": {
+            "dependsOn": ["update-code-formatting", "update-markdown-docs"]
         },
         "ci": {
             "dependsOn": ["build", "test", "lint", "check-format", "check-docs"]

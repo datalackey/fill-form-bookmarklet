@@ -9,9 +9,9 @@
         "test": "nx test",
         "test:watch": "vitest",
         "lint": "nx lint",
-        "format": "nx update-format",
+        "format": "nx update-code-formatting",
         "format:check": "nx check-format",
-        "docs": "nx update-docs",
+        "docs": "nx update-markdown-docs",
         "docs:check": "nx check-docs"
     },
     "devDependencies": {

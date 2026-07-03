@@ -1,3 +1,8 @@
+/**
+ * Returns true if any React signal is detected on the page: a [data-reactroot]
+ * element, window.__REACT_DEVTOOLS_GLOBAL_HOOK__, or __reactFiber /
+ * __reactInternalInstance keys on the form element.
+ */
 export function isReactForm(): boolean {
     if (document.querySelector("[data-reactroot]") !== null) {
         return true;
@@ -20,6 +25,11 @@ export function isReactForm(): boolean {
     return false;
 }
 
+/**
+ * Returns true when the bookmarklet is running inside an iframe by comparing
+ * window.self to window.top; a cross-origin SecurityError is treated as
+ * confirmation of being framed.
+ */
 export function isInsideIframe(): boolean {
     try {
         return window.self !== window.top;

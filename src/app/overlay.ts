@@ -66,6 +66,7 @@ export function showOverlay(html: string): void {
     document.body.appendChild(container);
 }
 
+/** Remove the bookmarklet overlay from the page if it is present. */
 export function closeOverlay(): void {
     const existing = document.getElementById(OVERLAY_ID);
     if (existing !== null) {
