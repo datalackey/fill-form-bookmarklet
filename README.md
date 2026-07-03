@@ -125,10 +125,11 @@ flowchart TB
 |----------|------------|---------|-------------|
 | `isReactForm` | — | boolean | Returns true if any React signal is detected on the page: a [data-reactroot] |
 | `isInsideIframe` | — | boolean | Returns true when the bookmarklet is running inside an iframe by comparing |
-| `renderScanView` | model: ScanViewModel | string | Render the Scan-mode view: field/label/value table + copyable template. |
+| `renderScanView` | model: ScanViewModel | string | Render the Scan-mode view: copy/cancel buttons, field table, JSON template block. |
 | `renderFillView` | result: MatchResult | string | Render the Fill-mode view: three-way match summary. |
 | `showOverlay` | html: string | void | Inject a fixed-position overlay containing the given HTML into the page. |
 | `closeOverlay` | — | void | Remove the bookmarklet overlay from the page if it is present. |
+| `showScanOverlay` | model: ScanViewModel | void | Render and inject the Scan overlay, then wire up Copy, Cancel, and Escape |
 
 #### core
 ```mermaid
