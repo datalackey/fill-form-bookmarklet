@@ -1,9 +1,11 @@
-import { MatchResult, ScanViewModel } from "../core/types.js";
+import { FillViewModel, ScanViewModel } from "../core/types.js";
 
 const OVERLAY_ID = "ffb-overlay";
 const COPY_BTN_ID = "ffb-copy-btn";
 const CANCEL_BTN_ID = "ffb-cancel-btn";
 const COPY_CONFIRM_ID = "ffb-copy-confirm";
+const FILL_BTN_ID = "ffb-fill-btn";
+const FILL_CANCEL_BTN_ID = "ffb-fill-cancel-btn";
 
 let escKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
@@ -80,20 +82,141 @@ export function renderScanView(model: ScanViewModel): string {
     );
 }
 
-/** Render the Fill-mode view: three-way match summary. */
-export function renderFillView(result: MatchResult): string {
+/** Render the Fill-mode view: match table and action buttons. */
+export function renderFillView(vm: FillViewModel): string {
+    const result = vm.result;
+
+    if (result.willFill.length === 0) {
+        return (
+            '<h2 style="margin:0 0 12px;font-size:18px">Nothing to Fill</h2>' +
+            '<p style="margin:0 0 12px;color:#555;font-size:14px">' +
+            "No fields in your template match this page. " +
+            "Your template may be from a different form." +
+            "</p>" +
+            '<button id="' +
+            FILL_CANCEL_BTN_ID +
+            '" style="background:none;border:1px solid #999;padding:10px 14px;' +
+            'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+            "Close" +
+            "</button>"
+        );
+    }
+
+    const fillRows = result.willFill
+        .map(function (field) {
+            return (
+                "<tr>" +
+                '<td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                escapeHtml(field.name) +
+                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                escapeHtml(field.label) +
+                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                escapeHtml(vm.template[field.name]) +
+                "</td></tr>"
+            );
+        })
+        .join("");
+
+    let staleSection = "";
+    if (result.noMatchOnPage.length > 0) {
+        const staleItems = result.noMatchOnPage
+            .map(function (key) {
+                return '<li style="font-size:13px">' + escapeHtml(key) + "</li>";
+            })
+            .join("");
+        staleSection =
+            '<h3 style="margin:16px 0 4px;font-size:15px;color:#b45309">' +
+            "Stale template keys (" +
+            result.noMatchOnPage.length +
+            ")</h3>" +
+            '<p style="margin:0 0 4px;color:#555;font-size:13px">' +
+            "These keys are in your template but have no matching field on this page:" +
+            "</p>" +
+            '<ul style="margin:0;padding-left:20px">' +
+            staleItems +
+            "</ul>";
+    }
+
+    let unmatchedSection = "";
+    if (result.noValueInTemplate.length > 0) {
+        const unmatchedItems = result.noValueInTemplate
+            .map(function (field) {
+                return '<li style="font-size:13px">' + escapeHtml(field.name) + "</li>";
+            })
+            .join("");
+        unmatchedSection =
+            '<h3 style="margin:16px 0 4px;font-size:15px;color:#555">' +
+            "Page fields not in template (" +
+            result.noValueInTemplate.length +
+            ")</h3>" +
+            '<p style="margin:0 0 4px;color:#555;font-size:13px">' +
+            "These fields will be left as-is:" +
+            "</p>" +
+            '<ul style="margin:0;padding-left:20px">' +
+            unmatchedItems +
+            "</ul>";
+    }
+
     return (
-        "<h2>Fill</h2><ul>" +
-        "<li>Will fill: " +
+        '<h2 style="margin:0 0 12px;font-size:18px">Ready to Fill</h2>' +
+        '<div style="margin-bottom:12px">' +
+        '<button id="' +
+        FILL_BTN_ID +
+        '" style="background:#0a7c3e;color:#fff;border:none;padding:10px 18px;' +
+        'font-size:15px;border-radius:4px;cursor:pointer;margin-right:8px">' +
+        "Fill and Submit" +
+        "</button>" +
+        '<button id="' +
+        FILL_CANCEL_BTN_ID +
+        '" style="background:none;border:1px solid #999;padding:10px 14px;' +
+        'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+        "Cancel" +
+        "</button>" +
+        "</div>" +
+        '<h3 style="margin:0 0 4px;font-size:15px">Fields to Fill (' +
         result.willFill.length +
-        "</li>" +
-        "<li>Template keys not on page: " +
-        result.noMatchOnPage.length +
-        "</li>" +
-        "<li>Page fields with no template value: " +
-        result.noValueInTemplate.length +
-        "</li></ul>"
+        ")</h3>" +
+        '<table style="border-collapse:collapse;width:100%;margin-bottom:4px;font-size:13px">' +
+        "<thead><tr>" +
+        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">name</th>' +
+        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">label</th>' +
+        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">value</th>' +
+        "</tr></thead>" +
+        "<tbody>" +
+        fillRows +
+        "</tbody></table>" +
+        staleSection +
+        unmatchedSection
     );
+}
+
+/**
+ * Render and inject the Fill overlay, then wire up Fill and Submit, Cancel,
+ * and Escape. Calls onFill() (closes overlay first) when the user confirms.
+ */
+export function showFillOverlay(vm: FillViewModel, onFill: () => void): void {
+    showOverlay(renderFillView(vm));
+
+    const fillBtn = document.getElementById(FILL_BTN_ID) as HTMLButtonElement | null;
+    const cancelBtn = document.getElementById(FILL_CANCEL_BTN_ID) as HTMLButtonElement | null;
+
+    if (cancelBtn !== null) {
+        cancelBtn.addEventListener("click", closeOverlay);
+    }
+
+    if (fillBtn !== null) {
+        fillBtn.addEventListener("click", function () {
+            closeOverlay();
+            onFill();
+        });
+    }
+
+    escKeyHandler = function (e: KeyboardEvent): void {
+        if (e.key === "Escape") {
+            closeOverlay();
+        }
+    };
+    document.addEventListener("keydown", escKeyHandler);
 }
 
 /** Inject a fixed-position overlay containing the given HTML into the page. */

@@ -27,3 +27,8 @@ export interface ScanViewModel {
     template: Template;
     templateText: string;
 }
+
+export interface FillViewModel {
+    result: MatchResult;
+    template: Template;
+}

@@ -1,7 +1,7 @@
 import { isReactForm, isInsideIframe } from "./detect.js";
 import { buildScanViewModel } from "../scan/scan.js";
-import { runFill } from "../fill/fill.js";
-import { showOverlay, showScanOverlay, renderFillView } from "./overlay.js";
+import { runFill, applyFill } from "../fill/fill.js";
+import { showScanOverlay, showFillOverlay } from "./overlay.js";
 
 // Thin orchestration only. Mode is auto-detected from the clipboard: a valid
 // template ⇒ Fill, otherwise ⇒ Scan.
@@ -17,9 +17,17 @@ void (async function main(): Promise<void> {
         return;
     }
 
-    const fillResult = await runFill();
-    if (fillResult !== null) {
-        showOverlay(renderFillView(fillResult));
+    const fillViewModel = await runFill();
+    if (fillViewModel !== null) {
+        showFillOverlay(fillViewModel, function () {
+            applyFill(fillViewModel);
+            const submitBtn = document.querySelector(
+                'input[type="submit"], button[type="submit"]'
+            ) as HTMLElement | null;
+            if (submitBtn !== null) {
+                submitBtn.click();
+            }
+        });
         return;
     }
 

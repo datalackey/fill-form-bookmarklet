@@ -1,6 +1,6 @@
 import { discoverFields } from "../core/dom.js";
 import { readClipboard, parseTemplate } from "../core/clipboard.js";
-import { FormField, MatchResult, Template } from "../core/types.js";
+import { FormField, FillViewModel, MatchResult, Template } from "../core/types.js";
 
 /**
  * Three-way match between a template and the form on the page:
@@ -50,14 +50,25 @@ export function fillField(field: FormField, value: string): void {
 
 /**
  * Fill-mode entry point. Reads the clipboard; if it holds a valid template,
- * returns the three-way match against the current page. Returns null when there
- * is no template on the clipboard, signalling the orchestrator to scan instead.
+ * returns the three-way match and template bundled as a FillViewModel. Returns
+ * null when there is no template on the clipboard, signalling the orchestrator
+ * to scan instead.
  */
-export async function runFill(): Promise<MatchResult | null> {
+export async function runFill(): Promise<FillViewModel | null> {
     const raw = await readClipboard();
     const template = parseTemplate(raw);
     if (template === null) {
         return null;
     }
-    return matchFields(template, discoverFields());
+    return { result: matchFields(template, discoverFields()), template: template };
+}
+
+/**
+ * Apply every matched field value from the template to the live DOM elements.
+ * Call this after the user confirms via the Fill and Submit button.
+ */
+export function applyFill(vm: FillViewModel): void {
+    for (const field of vm.result.willFill) {
+        fillField(field, vm.template[field.name]);
+    }
 }
