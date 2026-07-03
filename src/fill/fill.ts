@@ -1,5 +1,5 @@
 import { discoverFields } from "../core/dom.js";
-import { readClipboard, parseTemplate } from "../core/clipboard.js";
+import { parseTemplate } from "../core/clipboard.js";
 import { FormField, FillViewModel, MatchResult, Template } from "../core/types.js";
 
 /**
@@ -49,13 +49,12 @@ export function fillField(field: FormField, value: string): void {
 }
 
 /**
- * Fill-mode entry point. Reads the clipboard; if it holds a valid template,
- * returns the three-way match and template bundled as a FillViewModel. Returns
- * null when there is no template on the clipboard, signalling the orchestrator
- * to scan instead.
+ * Fill-mode entry point. Takes the raw clipboard string (read once by the
+ * orchestrator). Returns a FillViewModel when the text is a valid template,
+ * null otherwise — signalling the orchestrator to check for malformed JSON or
+ * fall back to Scan mode.
  */
-export async function runFill(): Promise<FillViewModel | null> {
-    const raw = await readClipboard();
+export function runFill(raw: string): FillViewModel | null {
     const template = parseTemplate(raw);
     if (template === null) {
         return null;

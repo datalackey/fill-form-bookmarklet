@@ -16,6 +16,15 @@ export async function readClipboard(): Promise<string> {
 }
 
 /**
+ * Returns true when the raw text begins with "{", indicating the user intended
+ * to paste a JSON template. Used by the orchestrator to distinguish "no template
+ * on clipboard" (scan mode) from "malformed template" (error overlay).
+ */
+export function looksLikeJson(raw: string): boolean {
+    return raw.trim().startsWith("{");
+}
+
+/**
  * Parse clipboard text into a flat name -> value template. Returns null when the
  * text is empty or not a valid flat JSON object, which the orchestrator treats
  * as "not a template" and falls back to Scan mode.

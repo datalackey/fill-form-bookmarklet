@@ -6,6 +6,7 @@ const CANCEL_BTN_ID = "ffb-cancel-btn";
 const COPY_CONFIRM_ID = "ffb-copy-confirm";
 const FILL_BTN_ID = "ffb-fill-btn";
 const FILL_CANCEL_BTN_ID = "ffb-fill-cancel-btn";
+const ERROR_CANCEL_BTN_ID = "ffb-error-cancel-btn";
 
 let escKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
@@ -164,7 +165,7 @@ export function renderFillView(vm: FillViewModel): string {
         FILL_BTN_ID +
         '" style="background:#0a7c3e;color:#fff;border:none;padding:10px 18px;' +
         'font-size:15px;border-radius:4px;cursor:pointer;margin-right:8px">' +
-        "Fill and Submit" +
+        "Fill Form" +
         "</button>" +
         '<button id="' +
         FILL_CANCEL_BTN_ID +
@@ -209,6 +210,34 @@ export function showFillOverlay(vm: FillViewModel, onFill: () => void): void {
             closeOverlay();
             onFill();
         });
+    }
+
+    escKeyHandler = function (e: KeyboardEvent): void {
+        if (e.key === "Escape") {
+            closeOverlay();
+        }
+    };
+    document.addEventListener("keydown", escKeyHandler);
+}
+
+/** Show an error overlay with a message and a Close button. */
+export function showErrorOverlay(message: string): void {
+    showOverlay(
+        '<h2 style="margin:0 0 12px;font-size:18px;color:#c0392b">Template Error</h2>' +
+            '<p style="margin:0 0 16px;color:#555;font-size:14px">' +
+            escapeHtml(message) +
+            "</p>" +
+            '<button id="' +
+            ERROR_CANCEL_BTN_ID +
+            '" style="background:none;border:1px solid #999;padding:10px 14px;' +
+            'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+            "Close" +
+            "</button>"
+    );
+
+    const cancelBtn = document.getElementById(ERROR_CANCEL_BTN_ID) as HTMLButtonElement | null;
+    if (cancelBtn !== null) {
+        cancelBtn.addEventListener("click", closeOverlay);
     }
 
     escKeyHandler = function (e: KeyboardEvent): void {
