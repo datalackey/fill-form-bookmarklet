@@ -4,10 +4,10 @@ Scan-mode logic: turns discovered fields into a name to value template and build
 
 ### `scan.ts`
 
-| Export | Signature | Description |
-|--------|-----------|-------------|
-| `buildTemplate` | `(fields: FormField[]) => Template` | Reduces a field list to a flat `{ name: value }` map — the shape the user saves and later edits |
-| `buildScanViewModel` | `() => ScanViewModel` | Calls `discoverFields()`, builds the template from the results, serializes it to JSON, and returns the complete `ScanViewModel` that the overlay renders |
+| Export               | Signature                           | Description                                                                                                                                              |
+| -------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildTemplate`      | `(fields: FormField[]) => Template` | Reduces a field list to a flat `{ name: value }` map — the shape the user saves and later edits                                                          |
+| `buildScanViewModel` | `() => ScanViewModel`               | Calls `discoverFields()`, builds the template from the results, serializes it to JSON, and returns the complete `ScanViewModel` that the overlay renders |
 
 ## Data flow
 

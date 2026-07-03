@@ -1,23 +1,24 @@
 <!-- TOC:START -->
+
 - [form-fill-bookmarklet](#form-fill-bookmarklet)
-  - [How It Works](#how-it-works)
-    - [Phase 0 — Install](#phase-0--install)
-    - [Phase 1 — Scan](#phase-1--scan)
-    - [Phase 2 — Edit](#phase-2--edit)
-    - [Phase 3 — Fill](#phase-3--fill)
-  - [Tagged Content Format](#tagged-content-format)
-  - [Architecture](#architecture)
-    - [Component Diagram](#component-diagram)
-    - [Components](#components)
-    - [Component Details](#component-details)
-      - [app](#app)
-      - [core](#core)
-      - [fill](#fill)
-      - [scan](#scan)
-  - [Build Pipeline](#build-pipeline)
-  - [Build](#build)
-  - [Project Status](#project-status)
-<!-- TOC:END -->
+    - [How It Works](#how-it-works)
+        - [Phase 0 — Install](#phase-0--install)
+        - [Phase 1 — Scan](#phase-1--scan)
+        - [Phase 2 — Edit](#phase-2--edit)
+        - [Phase 3 — Fill](#phase-3--fill)
+    - [Tagged Content Format](#tagged-content-format)
+    - [Architecture](#architecture)
+        - [Component Diagram](#component-diagram)
+        - [Components](#components)
+        - [Component Details](#component-details)
+            - [app](#app)
+            - [core](#core)
+            - [fill](#fill)
+            - [scan](#scan)
+    - [Build Pipeline](#build-pipeline)
+    - [Build](#build)
+    - [Project Status](#project-status)
+      <!-- TOC:END -->
 
 # form-fill-bookmarklet
 
@@ -25,6 +26,8 @@ A zero-dependency browser bookmarklet that removes the repetitive overhead of
 submitting **recurring events** to web calendars that have **no native support
 for periodic recurrence** (e.g. CalendarWiz, and many WordPress/Drupal nonprofit
 calendar plugins).
+
+**Just want to use it?** Go to the [install page](https://datalackey.github.io/fill-form-bookmarklet/) — no code, no setup.
 
 Instead of re-typing the same event every week, you capture a filled-out form
 **once**, save it as a small text template, and from then on you only edit the
@@ -51,9 +54,9 @@ No installation, extension, or account required.
 
 1. Navigate to the form and fill it out by hand, exactly as you want a typical event.
 2. Click the bookmarklet. With an empty clipboard it runs in **Scan mode**:
-   - discovers every form field with a `name` attribute,
-   - detects each field's human-readable label,
-   - displays a field / label / value table and a JSON template below it.
+    - discovers every form field with a `name` attribute,
+    - detects each field's human-readable label,
+    - displays a field / label / value table and a JSON template below it.
 3. Click **Copy**, paste into a plain text file, and save it.
 
 ### Phase 2 — Edit
@@ -65,9 +68,9 @@ the date. Everything else stays as captured.
 
 1. Copy your edited template to the clipboard.
 2. Click the bookmarklet. It runs in **Fill mode**:
-   - matches template keys to form fields (✅ will fill · ⚠️ stale key · ⚠️ no template value),
-   - fills each matched field,
-   - shows a **Fill and Submit** button — no auto-submit, you always confirm.
+    - matches template keys to form fields (✅ will fill · ⚠️ stale key · ⚠️ no template value),
+    - fills each matched field,
+    - shows a **Fill and Submit** button — no auto-submit, you always confirm.
 
 > Mode is chosen from the clipboard automatically: valid template ⇒ Fill, otherwise ⇒ Scan.
 
@@ -83,6 +86,7 @@ awareness but are **never** overwritten by the bookmarklet.
 ### Component Diagram
 
 <!-- UML:components:START -->
+
 ```mermaid
 flowchart TB
   subgraph app["app"]
@@ -100,29 +104,35 @@ flowchart TB
   fill --> core
   scan --> core
 ```
+
 <!-- UML:components:END -->
 
 ### Components
 
 <!-- UML:components-table:START -->
-| Component | Description |
-|-----------|-------------|
-| [app](#app) | Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary |
+
+| Component     | Description                                                                                                                                                                                                                                                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [app](#app)   | Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary                                                        |
 | [core](#core) | Shared foundation layer used by both phases: the TypeScript interfaces (FormField, Template, MatchResult, ScanViewModel), the DOM utility code (field discovery by name attribute, four-pattern label detection, and group clustering, ported from the spike), and the clipboard transport (read/parse/serialize the JSON template) |
-| [fill](#fill) | Fill-mode logic: three-way match between a template and the page form, single-field value application with input/change events, and the clipboard-driven fill entry point |
-| [scan](#scan) | Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user |
+| [fill](#fill) | Fill-mode logic: three-way match between a template and the page form, single-field value application with input/change events, and the clipboard-driven fill entry point                                                                                                                                                           |
+| [scan](#scan) | Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user                                                                                                                                                                             |
+
 <!-- UML:components-table:END -->
 
 ### Component Details
 
 <!-- UML:component-details:START -->
+
 #### app
+
 ```mermaid
 classDiagram
   direction TB
 ```
 
 #### core
+
 ```mermaid
 classDiagram
   direction TB
@@ -158,16 +168,19 @@ classDiagram
 ```
 
 #### fill
+
 ```mermaid
 classDiagram
   direction TB
 ```
 
 #### scan
+
 ```mermaid
 classDiagram
   direction TB
 ```
+
 <!-- UML:component-details:END -->
 
 ## Build Pipeline
@@ -176,6 +189,7 @@ The diagram below is generated from the NX target definitions in
 [`project.json`](./project.json).
 
 <!-- NX_GRAPH:START -->
+
 ```mermaid
 graph TD
 
@@ -196,6 +210,7 @@ graph TD
   ci --> test
   test --> build
 ```
+
 <!-- NX_GRAPH:END -->
 
 ## Build
