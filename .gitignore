@@ -8,3 +8,6 @@ coverage/
 .nx/
 .env
 
+.browsers/
+test-results/
+
