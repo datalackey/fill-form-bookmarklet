@@ -12,11 +12,13 @@
         "format": "nx update-code-formatting",
         "format:check": "nx check-format",
         "docs": "nx update-markdown-docs",
-        "docs:check": "nx check-docs"
+        "docs:check": "nx check-docs",
+        "test:e2e": "nx test-e2e"
     },
     "devDependencies": {
         "@datalackey/autogen-markdown-doc": "^1.4.7",
         "@datalackey/typescript-build-config": "^0.0.9",
+        "@playwright/test": "^1.61.1",
         "@types/node": "^20.19.43",
         "@typescript-eslint/eslint-plugin": "^8.60.1",
         "@typescript-eslint/parser": "^8.60.1",

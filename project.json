@@ -33,6 +33,10 @@
         "update-all-formatting": {
             "dependsOn": ["update-code-formatting", "update-markdown-docs"]
         },
+        "test-e2e": {
+            "command": "playwright test",
+            "dependsOn": ["build-dev"]
+        },
         "ci": {
             "dependsOn": ["build", "test", "lint", "check-format", "check-docs"]
         }
