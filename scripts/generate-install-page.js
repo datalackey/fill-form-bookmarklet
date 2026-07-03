@@ -95,6 +95,33 @@ var html = `<!DOCTYPE html>
     button:hover { background: #1d4ed8; }
     button:active { background: #1e40af; }
 
+    .drag-link {
+      display: inline-block;
+      background: #2563eb;
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.6rem 1.4rem;
+      border: 1px solid #1d4ed8;
+      border-radius: 6px;
+      cursor: grab;
+    }
+
+    .drag-link:hover { background: #1d4ed8; }
+    .drag-link:active { cursor: grabbing; }
+
+    details { margin-top: 0.75rem; }
+
+    summary {
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2563eb;
+    }
+
+    details[open] summary { margin-bottom: 0.5rem; }
+
     .copy-status {
       font-size: 0.85rem;
       color: #16a34a;
@@ -171,18 +198,24 @@ var html = `<!DOCTYPE html>
 
     <div class="step">
       <div class="step-label">Step 1 of 3</div>
-      <h2>Copy the bookmarklet</h2>
-      <p>Select all the text below and copy it, or use the button.</p>
-      <textarea id="bookmarklet-text" readonly spellcheck="false" autocomplete="off">${bookmarklet}</textarea>
-      <div class="copy-row">
-        <button id="copy-btn" onclick="copyBookmarklet()">Copy to Clipboard</button>
-        <span class="copy-status" id="copy-status">Copied!</span>
-      </div>
+      <h2>Drag this button to your bookmarks bar</h2>
+      <p>Drag the blue button up onto your browser's bookmarks bar. That's the whole install &mdash; no extensions, no accounts.</p>
+      <p><a class="drag-link" href="${bookmarklet}" onclick="return false" title="Drag me to your bookmarks bar">&#9776; Form Fill</a></p>
+      <details>
+        <summary>Can't drag it? Copy the text instead</summary>
+        <p>Select all the text below and copy it, or use the button, then follow Step 2.</p>
+        <textarea id="bookmarklet-text" readonly spellcheck="false" autocomplete="off">${bookmarklet}</textarea>
+        <div class="copy-row">
+          <button id="copy-btn" onclick="copyBookmarklet()">Copy to Clipboard</button>
+          <span class="copy-status" id="copy-status">Copied!</span>
+        </div>
+      </details>
     </div>
 
     <div class="step">
       <div class="step-label">Step 2 of 3</div>
-      <h2>Add it as a browser bookmark</h2>
+      <h2>Prefer copy/paste? Add it as a bookmark manually</h2>
+      <p class="note" style="margin-top:0">Skip this if you dragged the button in Step 1 &mdash; you're already done.</p>
 
       <div class="browser-tabs">
         <button class="tab active" onclick="showTab('chrome', this)">Chrome / Edge</button>

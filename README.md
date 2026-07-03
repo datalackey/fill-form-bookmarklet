@@ -45,10 +45,10 @@ phases describe the full human workflow.
 
 ### Phase 0 — Install
 
-Go to the **[install page](https://datalackey.github.io/fill-form-bookmarklet/)**,
-copy the bookmarklet text, and save it as a browser bookmark.
-Step-by-step instructions for Chrome, Firefox, and Safari are on that page.
-No installation, extension, or account required.
+Go to the **[install page](https://datalackey.github.io/fill-form-bookmarklet/)**
+and drag the **Form Fill** button onto your browser's bookmarks bar. If dragging
+isn't an option, the page also offers copy/paste instructions for Chrome, Firefox,
+and Safari. No installation, extension, or account required.
 
 ### Phase 1 — Scan
 
