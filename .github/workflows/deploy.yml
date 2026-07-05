@@ -9,11 +9,12 @@ permissions:
   pages: write
   id-token: write
 
-# Only one Pages deploy at a time; don't cancel in-progress so a
-# in-flight deploy finishes before the next one starts.
+# Cancel any in-progress run when a new push arrives so only the latest
+# commit deploys. Prevents multiple concurrent artifact uploads racing
+# to claim the same "github-pages" artifact name.
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
