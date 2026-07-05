@@ -15,7 +15,7 @@ editing a text file but not writing code.
 
 ## Repository
 
-`git@github.com:datalackey/form-fill-bookmarklet.git`
+`git@github.com:datalackey/fill-form-bookmarklet.git`
 
 Related repos:
 - `git@github.com:datalackey/build-tools.git` — monorepo of tooling packages
