@@ -70,11 +70,10 @@ silent POST failures. This bookmarklet uses `name` exclusively.
 // Pattern 2: field is a descendant of <label> — also reliable
 // Pattern 3: nearest preceding sibling <label> — heuristic, ~70-80% reliable
 // Pattern 3b: parent container's preceding sibling is <label>
-//             (CalendarWiz div-wrapper style — confirmed working in spike)
+//             (CalendarWiz div-wrapper style)
 ```
 
-Spike results confirmed all four patterns working correctly against the
-test server. Hidden fields correctly return pattern 0 / empty label.
+All four patterns confirmed working. Hidden fields correctly return pattern 0 / empty label.
 
 Radio buttons need special handling — each radio is wrapped in its own
 label (pattern 2) giving individual option text. Group label should come
@@ -180,7 +179,6 @@ Dependency direction (also rendered in README.md via the UML docs generator):
 - `src/core/types.ts` — all interfaces defined (incl. ScanViewModel)
 - `src/app/detect.ts` — isReactForm() and isInsideIframe() implemented
 - `src/core/dom.ts` — discoverFields(), detectLabel() (4 patterns), detectGroups()
-  ported from the spike
 - `src/core/clipboard.ts` — readClipboard(), parseTemplate(), serializeTemplate()
 - `src/scan/scan.ts` — buildTemplate(), buildScanViewModel()
 - `src/fill/fill.ts` — matchFields(), fillField(), runFill()
@@ -192,14 +190,12 @@ Dependency direction (also rendered in README.md via the UML docs generator):
 - NX migration complete — see below
 - Documentation generation via build-tools plugins (autogen-markdown-doc): README
   TOC, component UML, and NX build-graph auto-generated and drift-checked in CI
-- Spike: field discovery, all four label patterns, group detection
-  validated against local test server (see spike notes below)
 
 ### Not yet started / known gaps
 - `overlay.ts` is a basic implementation — the full scan table / fill-and-submit
   UI is not finished, and it is manual-test only
-- Radio group labels (spike carry-forward): each radio reports its own option
-  text instead of the shared group label — locked as `it.todo` in dom.test.ts
+- Radio group labels: each radio reports its own option text instead of the
+  shared group label — locked as `it.todo` in dom.test.ts
 - `clipboard.test.ts`, `scan.test.ts`, `fill.test.ts` not yet written
 - Server-integration and browser-E2E test tiers not yet added (test-server form
   is currently mirrored, not shared, by tests/fixtures/scan-form.html)
@@ -242,7 +238,7 @@ npx nx ci           # full local gate: build + test + lint + check-format + chec
 
 ---
 
-## Test server (spike / manual testing)
+## Test server (manual testing)
 
 Located at `~/bw-form-test/`. Run with:
 
@@ -259,16 +255,16 @@ as the URL of a new bookmark, navigate to localhost:3456, click it.
 
 ---
 
-## Spike findings (label detection console output)
+## Label detection validation
 
 All patterns confirmed working:
-- Group 1 (pattern 2): field wrapped in label ✅
-- Group 2 (pattern 1): label for="id" ✅
-- Group 3 (pattern 3): preceding sibling label, CalendarWiz div style ✅
-- Group 6 (pattern 3b): date/time cluster, all resolve to "Start Date" / "Start Time" ✅
-- Group 5 hidden fields: pattern 0, empty label ✅ (expected)
+- Pattern 2: field wrapped in label ✅
+- Pattern 1: label for="id" ✅
+- Pattern 3: preceding sibling label, CalendarWiz div style ✅
+- Pattern 3b: date/time cluster, all resolve to "Start Date" / "Start Time" ✅
+- Hidden fields: pattern 0, empty label ✅ (expected)
 
-Known issues from spike:
+Known issues:
 1. Radio buttons return individual option label text instead of group label
 2. Label text includes child span content (annotation spans in test form)
 

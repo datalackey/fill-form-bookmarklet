@@ -15,7 +15,7 @@
       - [fill](#fill)
       - [scan](#scan)
   - [Build Pipeline](#build-pipeline)
-  - [Build](#build)
+  - [Developer Workflow](#developer-workflow)
   - [Project Status](#project-status)
     - [Known gaps](#known-gaps)
 <!-- TOC:END -->
@@ -27,7 +27,8 @@ submitting **recurring events** to web calendars that have **no native support
 for periodic recurrence** (e.g. CalendarWiz, and many WordPress/Drupal nonprofit
 calendar plugins).
 
-**Just want to use it?** Go to the [install page](https://datalackey.github.io/fill-form-bookmarklet/) — no code, no setup.
+**Just want to use it?** Go to the
+[install page](https://datalackey.github.io/fill-form-bookmarklet/) — no code, no setup.
 
 Instead of re-typing the same event every week, you capture a filled-out form
 **once**, save it as a small text template, and from then on you only edit the
@@ -68,7 +69,14 @@ the date. Everything else stays as captured.
 
 1. Copy your edited template to the clipboard.
 2. Click the bookmarklet. It runs in **Fill mode**:
-    - matches template keys to form fields (✅ will fill · ⚠️ stale key · ⚠️ no template value),
+    - matches template keys to form fields in three categories:
+        - ✅ **Will fill** — the template key matches a field `name` on this page;
+          the value will be written in.
+        - ⚠️ **Stale key** — the template has an entry for a field that no longer
+          exists on this page (renamed, removed, or wrong form); it is ignored silently.
+        - ⚠️ **No template value** — a field exists on the page but has no entry
+          in your template; it is left as-is.
+      If there are zero matches the overlay reports an error and no submit button is shown.
     - fills each matched field,
     - shows a **Fill and Submit** button — no auto-submit, you always confirm.
 
@@ -77,8 +85,7 @@ the date. Everything else stays as captured.
 ## Tagged Content Format
 
 The saved template is **tagged content** — a flat map of form-field `name` to the
-value to submit. JSON is the supported format today; YAML is a candidate format
-for the same `name → value` shape. Hidden fields are shown in the Scan table for
+value to submit in JSON format. Hidden fields are shown in the Scan table for
 awareness but are **never** overwritten by the bookmarklet.
 
 ## Architecture
@@ -110,10 +117,10 @@ flowchart TB
 <!-- UML:components-table:START -->
 | Component | Description |
 |-----------|-------------|
-| [app](#app) | Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary |
-| [core](#core) | Shared foundation layer used by both phases: the TypeScript interfaces (FormField, Template, MatchResult, ScanViewModel), the DOM utility code (field discovery by name attribute, four-pattern label detection, and group clustering, ported from the spike), and the clipboard transport (read/parse/serialize the JSON template) |
-| [fill](#fill) | Fill-mode logic: three-way match between a template and the page form, single-field value application with input/change events, and the clipboard-driven fill entry point |
-| [scan](#scan) | Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user |
+| [app](#app) | Orchestration entry point: clipboard-based mode detection (Fill vs Scan), React/iframe compatibility guards, and the in-page overlay UI |
+| [core](#core) | Shared foundation: TypeScript interfaces, DOM field discovery with four-pattern label detection, and clipboard transport |
+| [fill](#fill) | Fill-mode logic: three-way template-to-form match, field value application with framework events, and fill entry point |
+| [scan](#scan) | Scan-mode logic: builds a name→value template from discovered fields and produces the view model for the overlay |
 <!-- UML:components-table:END -->
 
 ### Component Details
@@ -203,6 +210,7 @@ graph TD
   ci
   lint
   test
+  test_all
   test_e2e
   update_all_formatting
   update_code_formatting
@@ -214,28 +222,40 @@ graph TD
   ci --> lint
   ci --> test
   test --> build
+  test_all --> test
+  test_all --> test_e2e
   test_e2e --> build_dev
   update_all_formatting --> update_code_formatting
   update_all_formatting --> update_markdown_docs
 ```
 <!-- NX_GRAPH:END -->
 
-## Build
+## Developer Workflow
 
 ```bash
-npm install
-npm run build        # esbuild bundle + wrap-bookmarklet.js -> dist/bookmarklet.txt
-npm run build:dev    # unminified bundle for debugging
-npm test             # vitest run
-npm run lint         # eslint src tests
-npm run format       # prettier --write src tests
-npm run docs         # regenerate this README's auto-generated sections
-npm run docs:check   # CI drift check (fails if docs are stale)
+npm install   # first-time setup
 ```
+
+| What | NX target | npm shortcut |
+|------|-----------|--------------|
+| Full CI gate (build → unit tests → lint → format check → docs check) | `npx nx ci` | — |
+| Production build | `npx nx build` | `npm run build` |
+| Dev build (unminified, for manual bookmarklet testing) | `npx nx build-dev` | `npm run build:dev` |
+| Unit tests (builds first) | `npx nx test` | `npm test` |
+| E2E tests via Playwright (dev-builds first) | `npx nx test-e2e` | `npm run test:e2e` |
+| Unit **and** E2E tests | `npx nx test-all` | `npm run test:all` |
+| Lint | `npx nx lint` | `npm run lint` |
+| Format source code (prettier write) | `npx nx update-code-formatting` | `npm run format` |
+| Regenerate README auto-sections | `npx nx update-markdown-docs` | `npm run docs` |
+| Format code **and** update docs in one pass | `npx nx update-all-formatting` | — |
+| Check format only — fails if files need changes (CI) | `npx nx check-format` | `npm run format:check` |
+| Check docs drift only — fails if auto-sections are stale (CI) | `npx nx check-docs` | `npm run docs:check` |
+| Watch mode for unit tests during development | — | `npm run test:watch` |
 
 ## Project Status
 
 ### Known gaps
 
-- Radio group labels: each radio reports its own option text instead of the shared group label (spike carry-forward, locked as `it.todo` in `dom.test.ts`)
+- Radio group labels: each radio reports its own option text instead of the shared
+  group label (locked as `it.todo` in `dom.test.ts`)
 - Checkbox and `<select>` filling not yet handled in `fillField()` 

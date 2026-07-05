@@ -1,4 +1,4 @@
-Shared foundation layer used by both phases: the TypeScript interfaces (FormField, Template, MatchResult, ScanViewModel), the DOM utility code (field discovery by name attribute, four-pattern label detection, and group clustering, ported from the spike), and the clipboard transport (read/parse/serialize the JSON template).
+Shared foundation: TypeScript interfaces, DOM field discovery with four-pattern label detection, and clipboard transport.
 
 ## Files
 
@@ -16,7 +16,7 @@ All shared interfaces. No runtime code, no imports.
 
 ### `dom.ts`
 
-Field discovery and label detection, ported from the spike and validated against the test server.
+Field discovery and label detection.
 
 | Export           | Signature                              | Description                                                                                                                                                                          |
 | ---------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -31,7 +31,7 @@ Label detection patterns (tried in order):
 3. Nearest preceding sibling `<label>` — heuristic
 4. `3b`: parent container's nearest preceding sibling is a `<label>` — CalendarWiz div-wrapper style
 
-Known carry-forward issues from the spike: radio buttons report individual option label text rather than the shared group label; label `textContent` includes child `<span>` annotation text.
+Known issues: radio buttons report individual option label text rather than the shared group label; label `textContent` includes child `<span>` annotation text.
 
 ### `clipboard.ts`
 

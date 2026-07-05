@@ -1,6 +1,8 @@
 import { FillViewModel, ScanViewModel } from "../core/types.js";
+import styles from "./overlay.css";
 
 const OVERLAY_ID = "ffb-overlay";
+const STYLES_ID = "ffb-styles";
 const COPY_BTN_ID = "ffb-copy-btn";
 const CANCEL_BTN_ID = "ffb-cancel-btn";
 const COPY_CONFIRM_ID = "ffb-copy-confirm";
@@ -22,13 +24,13 @@ export function renderScanView(model: ScanViewModel): string {
             const group = field.groupLabel === null ? "" : field.groupLabel;
             return (
                 "<tr>" +
-                '<td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                '<td class="ffb-table-cell">' +
                 escapeHtml(field.name) +
-                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                "</td><td>" +
                 escapeHtml(field.label) +
-                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                "</td><td>" +
                 escapeHtml(field.value) +
-                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                "</td><td>" +
                 escapeHtml(group) +
                 "</td></tr>"
             );
@@ -36,49 +38,45 @@ export function renderScanView(model: ScanViewModel): string {
         .join("");
 
     return (
-        '<h2 style="margin:0 0 12px;font-size:18px">Scan Results</h2>' +
-        '<div style="margin-bottom:12px">' +
+        "<h2>Scan Results</h2>" +
+        '<div class="ffb-btn-row">' +
         '<button id="' +
         COPY_BTN_ID +
-        '" style="background:#0070f3;color:#fff;border:none;padding:10px 18px;' +
-        'font-size:15px;border-radius:4px;cursor:pointer;margin-right:8px">' +
+        '" class="ffb-btn-primary">' +
         "Copy Template to Clipboard" +
         "</button>" +
         '<button id="' +
         CANCEL_BTN_ID +
-        '" style="background:none;border:1px solid #999;padding:10px 14px;' +
-        'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+        '" class="ffb-btn-cancel">' +
         "Cancel" +
         "</button>" +
         "</div>" +
         '<div id="' +
         COPY_CONFIRM_ID +
-        '" style="display:none;background:#f0faf0;border:1px solid #4caf50;' +
-        'border-radius:4px;padding:10px 14px;margin-bottom:12px;color:#2e7d32;font-size:14px">' +
+        '">' +
         "&#x2713; Copied! Paste into a plain text file and save it. " +
         "Next time you submit this form, copy the file contents to your clipboard and click the bookmarklet " +
         "&#x2014; it will fill everything in automatically, and all you have to do then is press Submit." +
         "</div>" +
-        '<h3 style="margin:0 0 4px;font-size:15px">Fields Found on This Page</h3>' +
-        '<p style="margin:0 0 8px;color:#555;font-size:13px">' +
+        "<h3>Fields Found on This Page</h3>" +
+        '<p class="ffb-desc">' +
         "Review these to confirm the bookmarklet found everything you filled in." +
         "</p>" +
-        '<table style="border-collapse:collapse;width:100%;margin-bottom:16px;font-size:13px">' +
+        '<table class="ffb-table">' +
         "<thead><tr>" +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">name</th>' +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">label</th>' +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">value</th>' +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">group</th>' +
+        "<th>name</th>" +
+        "<th>label</th>" +
+        "<th>value</th>" +
+        "<th>group</th>" +
         "</tr></thead>" +
         "<tbody>" +
         rows +
         "</tbody></table>" +
-        '<h3 style="margin:0 0 4px;font-size:15px">Your Template (JSON)</h3>' +
-        '<p style="margin:0 0 8px;color:#555;font-size:13px">' +
+        "<h3>Your Template (JSON)</h3>" +
+        '<p class="ffb-desc">' +
         "This is what gets saved to your text file. The bookmarklet reads it next time." +
         "</p>" +
-        '<pre style="background:#f5f5f5;border:1px solid #ddd;border-radius:4px;' +
-        'padding:10px;overflow:auto;font-size:12px;margin:0">' +
+        '<pre class="ffb-pre">' +
         escapeHtml(model.templateText) +
         "</pre>"
     );
@@ -90,27 +88,24 @@ export function renderFillView(vm: FillViewModel): string {
 
     if (result.willFill.length === 0) {
         return (
-            '<h2 style="margin:0 0 12px;font-size:18px">Nothing to Fill</h2>' +
-            '<p style="margin:0 0 12px;color:#555;font-size:14px">' +
+            "<h2>Nothing to Fill</h2>" +
+            '<p class="ffb-desc">' +
             "No fields in your template match this page. " +
             "Your template may be from a different form." +
             "</p>" +
             '<button id="' +
             FILL_CANCEL_BTN_ID +
-            '" style="background:none;border:1px solid #999;padding:10px 14px;' +
-            'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+            '" class="ffb-btn-cancel">' +
             "Close" +
             "</button>" +
             '<button id="' +
             SCAN_INSTEAD_BTN_ID +
-            '" style="background:none;border:none;padding:0;font-size:13px;' +
-            'color:#0070f3;cursor:pointer;text-decoration:underline;margin-left:12px">' +
+            '" class="ffb-btn-link">' +
             "Scan this form instead" +
             "</button>" +
-            '<hr style="border:none;border-top:1px solid #ddd;margin:16px 0">' +
-            '<h3 style="margin:0 0 4px;font-size:15px">Template found in clipboard</h3>' +
-            '<pre style="background:#f5f5f5;border:1px solid #ddd;border-radius:4px;' +
-            'padding:10px;overflow:auto;font-size:12px;margin:0">' +
+            '<hr class="ffb-divider">' +
+            "<h3>Template found in clipboard</h3>" +
+            '<pre class="ffb-pre">' +
             escapeHtml(JSON.stringify(vm.template, null, 2)) +
             "</pre>"
         );
@@ -120,11 +115,11 @@ export function renderFillView(vm: FillViewModel): string {
         .map(function (field) {
             return (
                 "<tr>" +
-                '<td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                "<td>" +
                 escapeHtml(field.name) +
-                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                "</td><td>" +
                 escapeHtml(field.label) +
-                '</td><td style="padding:4px 8px;border-bottom:1px solid #eee">' +
+                "</td><td>" +
                 escapeHtml(vm.template[field.name]) +
                 "</td></tr>"
             );
@@ -135,18 +130,18 @@ export function renderFillView(vm: FillViewModel): string {
     if (result.noMatchOnPage.length > 0) {
         const staleItems = result.noMatchOnPage
             .map(function (key) {
-                return '<li style="font-size:13px">' + escapeHtml(key) + "</li>";
+                return "<li>" + escapeHtml(key) + "</li>";
             })
             .join("");
         staleSection =
-            '<h3 style="margin:16px 0 4px;font-size:15px;color:#b45309">' +
+            '<h3 class="ffb-stale-heading">' +
             "Stale template keys (" +
             result.noMatchOnPage.length +
             ")</h3>" +
-            '<p style="margin:0 0 4px;color:#555;font-size:13px">' +
+            '<p class="ffb-mini-desc">' +
             "These keys are in your template but have no matching field on this page:" +
             "</p>" +
-            '<ul style="margin:0;padding-left:20px">' +
+            '<ul class="ffb-list">' +
             staleItems +
             "</ul>";
     }
@@ -155,52 +150,49 @@ export function renderFillView(vm: FillViewModel): string {
     if (result.noValueInTemplate.length > 0) {
         const unmatchedItems = result.noValueInTemplate
             .map(function (field) {
-                return '<li style="font-size:13px">' + escapeHtml(field.name) + "</li>";
+                return "<li>" + escapeHtml(field.name) + "</li>";
             })
             .join("");
         unmatchedSection =
-            '<h3 style="margin:16px 0 4px;font-size:15px;color:#555">' +
+            '<h3 class="ffb-unmatched-heading">' +
             "Page fields not in template (" +
             result.noValueInTemplate.length +
             ")</h3>" +
-            '<p style="margin:0 0 4px;color:#555;font-size:13px">' +
+            '<p class="ffb-mini-desc">' +
             "These fields will be left as-is:" +
             "</p>" +
-            '<ul style="margin:0;padding-left:20px">' +
+            '<ul class="ffb-list">' +
             unmatchedItems +
             "</ul>";
     }
 
     return (
-        '<h2 style="margin:0 0 12px;font-size:18px">Ready to Fill</h2>' +
-        '<div style="margin-bottom:12px">' +
+        "<h2>Ready to Fill</h2>" +
+        '<div class="ffb-btn-row">' +
         '<button id="' +
         FILL_BTN_ID +
-        '" style="background:#0a7c3e;color:#fff;border:none;padding:10px 18px;' +
-        'font-size:15px;border-radius:4px;cursor:pointer;margin-right:8px">' +
+        '" class="ffb-btn-fill">' +
         "Fill Form" +
         "</button>" +
         '<button id="' +
         FILL_CANCEL_BTN_ID +
-        '" style="background:none;border:1px solid #999;padding:10px 14px;' +
-        'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+        '" class="ffb-btn-cancel">' +
         "Cancel" +
         "</button>" +
         '<button id="' +
         SCAN_INSTEAD_BTN_ID +
-        '" style="background:none;border:none;padding:0;font-size:13px;' +
-        'color:#0070f3;cursor:pointer;text-decoration:underline;margin-left:12px">' +
+        '" class="ffb-btn-link">' +
         "Scan this form instead" +
         "</button>" +
         "</div>" +
-        '<h3 style="margin:0 0 4px;font-size:15px">Fields to Fill (' +
+        "<h3>Fields to Fill (" +
         result.willFill.length +
         ")</h3>" +
-        '<table style="border-collapse:collapse;width:100%;margin-bottom:4px;font-size:13px">' +
+        '<table class="ffb-table">' +
         "<thead><tr>" +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">name</th>' +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">label</th>' +
-        '<th style="text-align:left;border-bottom:2px solid #ccc;padding:4px 8px">value</th>' +
+        "<th>name</th>" +
+        "<th>label</th>" +
+        "<th>value</th>" +
         "</tr></thead>" +
         "<tbody>" +
         fillRows +
@@ -254,14 +246,13 @@ export function showFillOverlay(
 /** Show an error overlay with a message and a Close button. */
 export function showErrorOverlay(message: string): void {
     showOverlay(
-        '<h2 style="margin:0 0 12px;font-size:18px;color:#c0392b">Template Error</h2>' +
-            '<p style="margin:0 0 16px;color:#555;font-size:14px">' +
+        '<h2 class="ffb-error-heading">Template Error</h2>' +
+            '<p class="ffb-error-msg">' +
             escapeHtml(message) +
             "</p>" +
             '<button id="' +
             ERROR_CANCEL_BTN_ID +
-            '" style="background:none;border:1px solid #999;padding:10px 14px;' +
-            'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
+            '" class="ffb-btn-cancel">' +
             "Close" +
             "</button>"
     );
@@ -282,22 +273,24 @@ export function showErrorOverlay(message: string): void {
 /** Inject a fixed-position overlay containing the given HTML into the page. */
 export function showOverlay(html: string): void {
     closeOverlay();
+
+    if (document.getElementById(STYLES_ID) === null) {
+        const styleEl = document.createElement("style");
+        styleEl.id = STYLES_ID;
+        styleEl.textContent = styles;
+        document.head.appendChild(styleEl);
+    }
+
     const container = document.createElement("div");
     container.id = OVERLAY_ID;
-    container.style.position = "fixed";
-    container.style.top = "10px";
-    container.style.right = "10px";
-    container.style.zIndex = "2147483647";
-    container.style.background = "#fff";
-    container.style.border = "1px solid #333";
-    container.style.borderRadius = "6px";
-    container.style.padding = "16px";
-    container.style.maxHeight = "90vh";
-    container.style.overflowY = "auto";
-    container.style.maxWidth = "600px";
-    container.style.boxShadow = "0 4px 16px rgba(0,0,0,0.18)";
-    container.style.fontFamily = "sans-serif";
-    container.innerHTML = html;
+    container.innerHTML =
+        html +
+        '<div class="ffb-footer">' +
+        'Open Source! Always Free! ' +
+        '<a href="https://github.com/datalackey/fill-form-bookmarklet" target="_blank" rel="noopener">' +
+        "https://github.com/datalackey/fill-form-bookmarklet" +
+        "</a>" +
+        "</div>";
     document.body.appendChild(container);
 }
 

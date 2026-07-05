@@ -50,7 +50,7 @@ describe("discoverFields", function () {
     });
 });
 
-describe("detectLabel — four patterns (spike confirmed findings)", function () {
+describe("detectLabel — four patterns", function () {
     interface Case {
         name: string;
         label: string;
@@ -100,8 +100,8 @@ describe("detectGroups", function () {
         expect(field(discoverFields(), "g3_fullname").groupLabel).toBeNull();
     });
 
-    // Known spike carry-forward: each radio currently reports its own wrapping
-    // label ("Public"/"Private") instead of the shared "Event visibility" group
-    // label. Locked as TODO until dom.ts implements radio-group handling.
+    // Each radio currently reports its own wrapping label ("Public"/"Private")
+    // instead of the shared "Event visibility" group label. Locked as TODO until
+    // dom.ts implements radio-group handling.
     it.todo("radio group should use the shared name label, not per-option text");
 });

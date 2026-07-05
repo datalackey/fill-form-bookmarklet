@@ -1,4 +1,4 @@
-Scan-mode logic: turns discovered fields into a name to value template and builds the view model (fields plus copyable template text) shown to the user.
+Scan-mode logic: builds a name→value template from discovered fields and produces the view model for the overlay.
 
 ## Files
 

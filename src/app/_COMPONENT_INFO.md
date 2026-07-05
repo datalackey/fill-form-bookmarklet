@@ -1,4 +1,4 @@
-Application shell: the thin orchestration entry point that auto-detects mode from the clipboard (Fill when a valid template is present, otherwise Scan), the React/iframe page-compatibility guards, and the in-page overlay UI that renders the Scan table and Fill summary.
+Orchestration entry point: clipboard-based mode detection (Fill vs Scan), React/iframe compatibility guards, and the in-page overlay UI.
 
 ## Files
 
