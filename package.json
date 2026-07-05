@@ -17,7 +17,7 @@
         "test:all": "nx test-all"
     },
     "devDependencies": {
-        "@datalackey/autogen-markdown-doc": "^1.4.7",
+        "@datalackey/autogen-markdown-doc": "^1.4.11",
         "@datalackey/typescript-build-config": "^0.0.9",
         "@playwright/test": "^1.61.1",
         "@types/node": "^20.19.43",

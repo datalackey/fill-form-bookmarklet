@@ -169,15 +169,15 @@ flowchart TB
 #### app
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
-| `isReactForm` | — | boolean | Returns true if any React signal is detected on the page: a [data-reactroot] |
-| `isInsideIframe` | — | boolean | Returns true when the bookmarklet is running inside an iframe by comparing |
+| `isReactForm` | — | boolean | Returns true if any React signal is detected on the page: a [data-reactroot] element, window. |
+| `isInsideIframe` | — | boolean | Returns true when the bookmarklet is running inside an iframe by comparing window. |
 | `renderScanView` | model: ScanViewModel | string | Render the Scan-mode view: copy/cancel buttons, field table, JSON template block. |
 | `renderFillView` | vm: FillViewModel | string | Render the Fill-mode view: match table and action buttons. |
-| `showFillOverlay` | vm: FillViewModel<br>onFill: () => void<br>onScanInstead: () => void | void | Render and inject the Fill overlay, then wire up Fill and Submit, Cancel, |
+| `showFillOverlay` | vm: FillViewModel<br>onFill: () => void<br>onScanInstead: () => void | void | Render and inject the Fill overlay, then wire up Fill and Submit, Cancel, and Escape. |
 | `showErrorOverlay` | message: string | void | Show an error overlay with a message and a Close button. |
 | `showOverlay` | html: string | void | Inject a fixed-position overlay containing the given HTML into the page. |
 | `closeOverlay` | — | void | Remove the bookmarklet overlay from the page if it is present. |
-| `showScanOverlay` | model: ScanViewModel | void | Render and inject the Scan overlay, then wire up Copy, Cancel, and Escape |
+| `showScanOverlay` | model: ScanViewModel | void | Render and inject the Scan overlay, then wire up Copy, Cancel, and Escape so the overlay is always dismissed after any action. |
 
 #### core
 ```mermaid
@@ -222,16 +222,16 @@ classDiagram
 #### fill
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
-| `matchFields` | template: Template<br>fields: FormField[] | MatchResult | Three-way match between a template and the form on the page: |
+| `matchFields` | template: Template<br>fields: FormField[] | MatchResult | Three-way match between a template and the form on the page: - willFill:          fields whose `name` has a value in the template - noMatchOnPage:     template keys with no corresponding field (stale) - noValueInTemplate: page fields with no template entry |
 | `fillField` | field: FormField<br>value: string | void | Apply a single value to a field and fire the events frameworks listen for. |
-| `runFill` | raw: string | FillViewModel | null | Fill-mode entry point. |
+| `runFill` | raw: string | FillViewModel \| null | Fill-mode entry point. |
 | `applyFill` | vm: FillViewModel | void | Apply every matched field value from the template to the live DOM elements. |
 
 #### scan
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
 | `buildTemplate` | fields: FormField[] | Template | Build a flat name -> value template from discovered fields. |
-| `buildScanViewModel` | — | ScanViewModel | Produce the Scan-mode view model: the discovered fields (with current values |
+| `buildScanViewModel` | — | ScanViewModel | Produce the Scan-mode view model: the discovered fields (with current values and group labels) and the JSON template text the user copies and saves. |
 <!-- UML:component-details:END -->
 
 ## Build Pipeline
