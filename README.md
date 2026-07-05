@@ -126,7 +126,7 @@ flowchart TB
 | `isInsideIframe` | — | boolean | Returns true when the bookmarklet is running inside an iframe by comparing |
 | `renderScanView` | model: ScanViewModel | string | Render the Scan-mode view: copy/cancel buttons, field table, JSON template block. |
 | `renderFillView` | vm: FillViewModel | string | Render the Fill-mode view: match table and action buttons. |
-| `showFillOverlay` | vm: FillViewModel<br>onFill: () => void | void | Render and inject the Fill overlay, then wire up Fill and Submit, Cancel, |
+| `showFillOverlay` | vm: FillViewModel<br>onFill: () => void<br>onScanInstead: () => void | void | Render and inject the Fill overlay, then wire up Fill and Submit, Cancel, |
 | `showErrorOverlay` | message: string | void | Show an error overlay with a message and a Close button. |
 | `showOverlay` | html: string | void | Inject a fixed-position overlay containing the given HTML into the page. |
 | `closeOverlay` | — | void | Remove the bookmarklet overlay from the page if it is present. |

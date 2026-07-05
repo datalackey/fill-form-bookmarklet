@@ -223,9 +223,7 @@ export function showFillOverlay(
 
     const fillBtn = document.getElementById(FILL_BTN_ID) as HTMLButtonElement | null;
     const cancelBtn = document.getElementById(FILL_CANCEL_BTN_ID) as HTMLButtonElement | null;
-    const scanInsteadBtn = document.getElementById(
-        SCAN_INSTEAD_BTN_ID
-    ) as HTMLButtonElement | null;
+    const scanInsteadBtn = document.getElementById(SCAN_INSTEAD_BTN_ID) as HTMLButtonElement | null;
 
     if (cancelBtn !== null) {
         cancelBtn.addEventListener("click", closeOverlay);
