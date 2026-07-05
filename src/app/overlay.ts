@@ -286,7 +286,7 @@ export function showOverlay(html: string): void {
     container.innerHTML =
         html +
         '<div class="ffb-footer">' +
-        'Open Source! Always Free! ' +
+        "Open Source! Always Free! " +
         '<a href="https://github.com/datalackey/fill-form-bookmarklet" target="_blank" rel="noopener">' +
         "https://github.com/datalackey/fill-form-bookmarklet" +
         "</a>" +

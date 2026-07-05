@@ -4,11 +4,11 @@
     "projectType": "application",
     "targets": {
         "build": {
-            "command": "esbuild src/app/index.ts --bundle --minify --format=iife --outfile=dist/bookmarklet.js && node scripts/wrap-bookmarklet.js",
+            "command": "esbuild src/app/index.ts --bundle --minify --format=iife --loader:.css=text --outfile=dist/bookmarklet.js && node scripts/wrap-bookmarklet.js",
             "outputs": ["{projectRoot}/dist"]
         },
         "build-dev": {
-            "command": "esbuild src/app/index.ts --bundle --format=iife --outfile=dist/bookmarklet.dev.js",
+            "command": "esbuild src/app/index.ts --bundle --format=iife --loader:.css=text --outfile=dist/bookmarklet.dev.js",
             "outputs": ["{projectRoot}/dist"]
         },
         "test": {
@@ -36,6 +36,9 @@
         "test-e2e": {
             "command": "playwright test",
             "dependsOn": ["build-dev"]
+        },
+        "test-all": {
+            "dependsOn": ["test", "test-e2e"]
         },
         "ci": {
             "dependsOn": ["build", "test", "lint", "check-format", "check-docs"]

@@ -5,8 +5,11 @@
     - [Phase 1 — Scan](#phase-1--scan)
     - [Phase 2 — Edit](#phase-2--edit)
     - [Phase 3 — Fill](#phase-3--fill)
-  - [Tagged Content Format](#tagged-content-format)
-  - [Architecture](#architecture)
+  - [Comparison With Off-the-Shelf Tools](#comparison-with-off-the-shelf-tools)
+    - [Why not a password manager (Bitwarden, LastPass, 1Password)?](#why-not-a-password-manager-bitwarden-lastpass-1password)
+    - [Why the custom bookmarklet instead](#why-the-custom-bookmarklet-instead)
+  - [Design Overview](#design-overview)
+    - [Tagged Content Format](#tagged-content-format)
     - [Component Diagram](#component-diagram)
     - [Components](#components)
     - [Component Details](#component-details)
@@ -82,13 +85,50 @@ the date. Everything else stays as captured.
 
 > Mode is chosen from the clipboard automatically: valid template ⇒ Fill, otherwise ⇒ Scan.
 
-## Tagged Content Format
+
+
+## Comparison With Off-the-Shelf Tools
+
+
+### Why not a password manager (Bitwarden, LastPass, 1Password)?
+
+Password managers with custom-field autofill were evaluated first, since they're
+the natural "off-the-shelf" answer for a non-technical user who just needs to
+change one value (the date) and resubmit a form.
+
+They were rejected because of a structural mismatch, not a missing feature:
+
+- Autofill in these tools matches form fields by `id` attribute.
+- HTML form submissions (POST data) are keyed by `name` attribute, not `id`.
+- On forms where `id` and `name` differ — which CalendarWiz's forms do — the
+  autofill either fills the wrong field or fails to fill it at all, with no
+  error shown to the user. The form still submits; the data is just wrong.
+- This behavior was confirmed to be consistent across Bitwarden, LastPass, and
+  1Password — none of them offer a way to target by `name` instead of `id`.
+
+Because the failure is silent, a non-technical user has no way to know the
+submission was corrupted. That risk is unacceptable for a tool meant to be
+handed to a non-technical org member and trusted to "just work."
+
+### Why the custom bookmarklet instead
+
+- Scans forms using `name` attributes exclusively, matching how the browser
+  actually submits data — eliminating the `id`/`name` mismatch entirely.
+- Purpose-built for repeated form resubmission with one changed value (date),
+  rather than general credential/autofill storage.
+- No vault, no account, no third-party sync — the template is a plain JSON
+  file the user controls and edits directly.
+- Shows a confirmation overlay before submission (will fill / no match /
+  missing value), giving the non-technical user visibility that password
+  managers don't provide.
+
+## Design Overview
+
+### Tagged Content Format
 
 The saved template is **tagged content** — a flat map of form-field `name` to the
 value to submit in JSON format. Hidden fields are shown in the Scan table for
 awareness but are **never** overwritten by the bookmarklet.
-
-## Architecture
 
 ### Component Diagram
 

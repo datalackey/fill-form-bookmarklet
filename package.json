@@ -13,7 +13,8 @@
         "format:check": "nx check-format",
         "docs": "nx update-markdown-docs",
         "docs:check": "nx check-docs",
-        "test:e2e": "nx test-e2e"
+        "test:e2e": "nx test-e2e",
+        "test:all": "nx test-all"
     },
     "devDependencies": {
         "@datalackey/autogen-markdown-doc": "^1.4.7",
