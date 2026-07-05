@@ -24,9 +24,15 @@ void (async function main(): Promise<void> {
 
     const fillViewModel = runFill(raw);
     if (fillViewModel !== null) {
-        showFillOverlay(fillViewModel, function () {
-            applyFill(fillViewModel);
-        });
+        showFillOverlay(
+            fillViewModel,
+            function () {
+                applyFill(fillViewModel);
+            },
+            function () {
+                showScanOverlay(buildScanViewModel());
+            }
+        );
         return;
     }
 

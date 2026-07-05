@@ -6,6 +6,7 @@ const CANCEL_BTN_ID = "ffb-cancel-btn";
 const COPY_CONFIRM_ID = "ffb-copy-confirm";
 const FILL_BTN_ID = "ffb-fill-btn";
 const FILL_CANCEL_BTN_ID = "ffb-fill-cancel-btn";
+const SCAN_INSTEAD_BTN_ID = "ffb-scan-instead-btn";
 const ERROR_CANCEL_BTN_ID = "ffb-error-cancel-btn";
 
 let escKeyHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -100,6 +101,12 @@ export function renderFillView(vm: FillViewModel): string {
             'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
             "Close" +
             "</button>" +
+            '<button id="' +
+            SCAN_INSTEAD_BTN_ID +
+            '" style="background:none;border:none;padding:0;font-size:13px;' +
+            'color:#0070f3;cursor:pointer;text-decoration:underline;margin-left:12px">' +
+            "Scan this form instead" +
+            "</button>" +
             '<hr style="border:none;border-top:1px solid #ddd;margin:16px 0">' +
             '<h3 style="margin:0 0 4px;font-size:15px">Template found in clipboard</h3>' +
             '<pre style="background:#f5f5f5;border:1px solid #ddd;border-radius:4px;' +
@@ -179,6 +186,12 @@ export function renderFillView(vm: FillViewModel): string {
         'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
         "Cancel" +
         "</button>" +
+        '<button id="' +
+        SCAN_INSTEAD_BTN_ID +
+        '" style="background:none;border:none;padding:0;font-size:13px;' +
+        'color:#0070f3;cursor:pointer;text-decoration:underline;margin-left:12px">' +
+        "Scan this form instead" +
+        "</button>" +
         "</div>" +
         '<h3 style="margin:0 0 4px;font-size:15px">Fields to Fill (' +
         result.willFill.length +
@@ -201,14 +214,28 @@ export function renderFillView(vm: FillViewModel): string {
  * Render and inject the Fill overlay, then wire up Fill and Submit, Cancel,
  * and Escape. Calls onFill() (closes overlay first) when the user confirms.
  */
-export function showFillOverlay(vm: FillViewModel, onFill: () => void): void {
+export function showFillOverlay(
+    vm: FillViewModel,
+    onFill: () => void,
+    onScanInstead: () => void
+): void {
     showOverlay(renderFillView(vm));
 
     const fillBtn = document.getElementById(FILL_BTN_ID) as HTMLButtonElement | null;
     const cancelBtn = document.getElementById(FILL_CANCEL_BTN_ID) as HTMLButtonElement | null;
+    const scanInsteadBtn = document.getElementById(
+        SCAN_INSTEAD_BTN_ID
+    ) as HTMLButtonElement | null;
 
     if (cancelBtn !== null) {
         cancelBtn.addEventListener("click", closeOverlay);
+    }
+
+    if (scanInsteadBtn !== null) {
+        scanInsteadBtn.addEventListener("click", function () {
+            closeOverlay();
+            onScanInstead();
+        });
     }
 
     if (fillBtn !== null) {
