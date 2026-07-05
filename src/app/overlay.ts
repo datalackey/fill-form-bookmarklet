@@ -99,7 +99,13 @@ export function renderFillView(vm: FillViewModel): string {
             '" style="background:none;border:1px solid #999;padding:10px 14px;' +
             'font-size:15px;border-radius:4px;cursor:pointer;color:#555">' +
             "Close" +
-            "</button>"
+            "</button>" +
+            '<hr style="border:none;border-top:1px solid #ddd;margin:16px 0">' +
+            '<h3 style="margin:0 0 4px;font-size:15px">Template found in clipboard</h3>' +
+            '<pre style="background:#f5f5f5;border:1px solid #ddd;border-radius:4px;' +
+            'padding:10px;overflow:auto;font-size:12px;margin:0">' +
+            escapeHtml(JSON.stringify(vm.template, null, 2)) +
+            "</pre>"
         );
     }
 
