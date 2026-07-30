@@ -25,6 +25,10 @@
 
 # form-fill-bookmarklet
 
+NOTE: this repo is maintained for historical purposes only. We have found that
+RoboForm (https://www.roboform.com) solves the problem in a much more polished 
+general way than this attempt at a home grown solution.
+
 A zero-dependency browser bookmarklet that removes the repetitive overhead of
 submitting **recurring events** to web calendars that have **no native support
 for periodic recurrence** (e.g. CalendarWiz, and many WordPress/Drupal nonprofit
